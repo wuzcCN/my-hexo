@@ -4,7 +4,7 @@ copyright_url: https://www.aobayu.cn/2022/09/13/Java/
 tags: 
     - java
 categories: 学习之路
-date: 2022-8-29
+date: 2022-9-13
 keywords: Java
 description: Java是一门面向对象的编程语言，不仅吸收了C++语言的各种优点，还摒弃了C++里难以理解的多继承、指针等概念，因此Java语言具有功能强大和简单易用两个特征。--本文为自己学习中所写，主要为JavaSE基础！
 ---
