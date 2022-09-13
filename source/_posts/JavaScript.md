@@ -2,8 +2,8 @@
 title: JavaScript
 copyright_url: https://www.aobayu.cn/2022/08/29/JavaScript/
 tags: 
-    - js
-    - jQuery
+    - JavaScript
+    - JQuery
 categories: 学习之路
 date: 2022-8-29
 keywords: JavaScript
