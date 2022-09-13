@@ -15,7 +15,7 @@ description: Java是一门面向对象的编程语言，不仅吸收了C++语言
 
 - 简单性 
 
-  Java就是C++语法的简化版，我们也可以将Java称之为“C++-”。跟我念“C加加减”，指的就是将C++的一些内容去掉；比如：头文件，指针运算，结构，联合，操作符重载，虚基类等等。
+  Java就是C++语法的简化版，我们也可以将Java称之为“C++-”。指的就是将C++的一些内容去掉；比如：头文件，指针运算，结构，联合，操作符重载，虚基类等等。
 
   同时，由于语法基于C语言，因此学习起来完全不费力。
 
@@ -69,7 +69,7 @@ description: Java是一门面向对象的编程语言，不仅吸收了C++语言
 - 首先要学习Java SE，掌握Java语言本身、Java核心开发技术以及Java标准库的使用；
 - 如果继续学习Java EE，那么Spring框架、数据库开发、分布式架构就是需要学习的；
 - 如果要学习大数据开发，那么Hadoop、Spark、Flink这些大数据平台就是需要学习的，他们都基于Java或Scala开发；
-- 如果想要学习移动开发，那么就深入Android平台，掌握Android App开发。
+- 如果想要学习移动开发，那么就深入Android平台，掌握Android APP开发，学习Kotlin语言。Kotlin支持Android开发，并提供了一系列的Android开发插件。
 
 ## Java环境配置
 
@@ -106,8 +106,12 @@ description: Java是一门面向对象的编程语言，不仅吸收了C++语言
   - 输出语句：sout，回车
 
 - 常用快捷键
+  - Ctrl+Y：删除所在行
   - Ctrl+D：复制数据到下一行
   - Ctrl+X：剪切数据，可以用来删除所在行
+  - Alt+enter：代码提示
+  - Alt+insert：快捷生成set、继承...等方法
+  - Ctrl+Alt+T：快捷生成if()、try{}...等语句
   - Ctrl+Alt+L：格式化代码，建议自己写代码的时候就注意格式
   - Ctrl+/：对选中的代码添加单行注释，如果想取消注释，再来一次即可
   - Ctrl+Shift+/：对选中的代码添加多行注释，如果想取消注释，再来一次即可
@@ -1950,7 +1954,7 @@ public static void main(String[] args) {
 		//ctrl + Alt + T
 		//Idea 快捷键
         try {
-            //try监控区域T
+            //try监控区域
             System.out.println(a/b);
         }catch (ArithmeticException e){
             //catch(想要捕获的异常类型!)捕获异常
@@ -1968,7 +1972,7 @@ public static void main(String[] args) {
 ```java
 //假设要捕获多个异常:从小到大!
 		try {
-            //try监控区域T
+            //try监控区域
             System.out.println(a/b);
         }catch (ArithmeticException e){
             //catch(想要捕获的异常类型!)捕获异常
