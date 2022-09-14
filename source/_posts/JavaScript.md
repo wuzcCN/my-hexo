@@ -10,9 +10,9 @@ keywords: JavaScript
 description: JavaScript（简称“JS”）是一种具有函数优先的轻量级，解释型的编程语言。基于原型编程、多范式的动态脚本语言，并且支持面向对象、命令式和声明式风格。--本文为自己学习中所写，包括JavaScript~jQuery，jQuery在本文最后，附带中文在线手册速查。
 ---
 
-## 1、快速入门
+## 快速入门
 
-### 1.1、引入JavaScript
+### 引入JavaScript
 
 1. script标签内，写与javascript代码
 
@@ -28,7 +28,7 @@ description: JavaScript（简称“JS”）是一种具有函数优先的轻量�
    <script src="./index.js"> </script>
    ```
 
-### 1.2、基本语法入门
+### 基本语法入门
 
 ```html
 <script>
@@ -47,9 +47,9 @@ description: JavaScript（简称“JS”）是一种具有函数优先的轻量�
 </script>
 ```
 
-## 2、数据类型
+## 数据类型
 
-### 2.1、字符串
+### 字符串
 
 1. number    
 
@@ -103,7 +103,7 @@ description: JavaScript（简称“JS”）是一种具有函数优先的轻量�
    //person.name
    ```
 
-### 2.2、数组
+### 数组
 
  **Array可以包含任意的数据类型**
 
@@ -213,7 +213,7 @@ arr.sort(元素)
 
 数组:存储数据(如何存，如和取，方法都可以自己实现!)
 
-### 2.3、对象
+### 对象
 
 ```javascript
 var 对象名= {
@@ -280,7 +280,7 @@ person.name = "www"
 //true
 ```
 
-### 2.4、流程控制
+### 流程控制
 
 1、if判断
 
@@ -395,7 +395,7 @@ document.write("循环结束");
 
 
 
-### 2.5、Map和Set
+### Map和Set
 
 1、map
 
@@ -416,7 +416,7 @@ set.delete("1");//删除
 console.log(set.has(3));//true ||false
 ```
 
-### 2.6、iterator
+### iterator
 
 1、遍历数组
 
@@ -445,9 +445,9 @@ for(let x of set){
 }
 ```
 
-## 3、函数
+## 函数
 
-### 3.1、定义函数
+### 定义函数
 
 ```javascript
 public 返回值类型 方法名(){
@@ -584,7 +584,7 @@ function aaa(a,b, ...rest) {
 
 rest参数只能写在最后面，**必须用...标识**。
 
-### 3.2、变量的作用域
+### 变量的作用域
 
 在javascript中, var定义变量实际是有作用域的。
 
@@ -760,7 +760,7 @@ console.log(PI);
 PI = '123';
 ```
 
-### 3.3、方法
+### 方法
 
 > 定义方法
 
@@ -845,11 +845,11 @@ dl.onload = function(){
 </div>
 ```
 
-## 4、内部对象
+## 内部对象
 
 > 标椎对象  object
 
-### 4.1、Date
+### Date
 
 基本使用
 
@@ -874,7 +874,7 @@ now.toLocalesString(); 注意，调用是一个方式，不是一个属性!
 now.toGMTString();
 ```
 
-### 4.2、JSON
+### JSON
 
 > jsonjson是什么
 
@@ -904,13 +904,13 @@ var jsonuser = JSON.stringify(user);
 var obj = JSON.parse('{"name" : "xiaoming" , "age" : 3, "sex" :"男"}');
 ```
 
-### 4.3、Ajax
+### Ajax
 
 - 原生的js写法  xhr异步请求
 - jQuey封装好的方法 $("#name").ajax("")
 - axios请求
 
-## 5、面向对象编程
+## 面向对象编程
 
 > 什么是面向对象
 
@@ -1018,7 +1018,7 @@ class student {
 
 简单的回顾一下构造函数、原型和实例的关系:每个构造函数都有一个原型对象，原型对象都包含一个指向构造函数的指针，而实例都包含一个指向原型对象的内部指针。那么假如我们让原型对象等于另一个类型的实例，结果会怎样?显然，此时的原型对象将包含一个指向另一个原型的指针，相应地，另一个原型中也包含着一个指向另一个构造函数的指针。假如另一个原型又是另一个类型的实例，那么上述关系依然成立。如此层层递进，就构成了实例与原型的链条。这就是所谓的原型链的基本概念。——摘自《javascript高级程序设计》
 
-## 6、操作BOM对象(重点)
+## 操作BOM对象(重点)
 > 浏览器介绍
 
 JavaScript和浏览器关系?
@@ -1223,7 +1223,7 @@ history.go(1)
 
 
 
-## 7、操作DOM对象(重点)
+## 操作DOM对象(重点)
 
 DOM:文档对象模型
 
@@ -1376,7 +1376,7 @@ myStyLe.innerHTML = 'body{ background-color: chartreuse;}';//设置标签内容
 </script>
 ```
 
-## 8、操作表单(验证)
+## 操作表单(验证)
 
 > 表单是什么form DOM树
 
@@ -1496,7 +1496,7 @@ myStyLe.innerHTML = 'body{ background-color: chartreuse;}';//设置标签内容
 
 
 
-## 9、jQuery
+## jQuery
 JavaScript
 jQuery库，里面存在大量的Javascript函数
 
