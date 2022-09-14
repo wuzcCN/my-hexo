@@ -90,7 +90,7 @@ avatar:
   effect: false
 
 # Disable all banner image
-disable_top_img: true
+disable_top_img: false
 
 # The banner image of home page
 index_img: https://s1.328888.xyz/2022/08/05/jA9Nr.webp
