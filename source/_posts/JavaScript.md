@@ -1494,7 +1494,67 @@ myStyLe.innerHTML = 'body{ background-color: chartreuse;}';//设置标签内容
 </script>
 ```
 
+## Ajax
 
+**AJAX = Asynchronous JavaScript and XML(异步的JavaScript和XML)。**
+
+**Ajax 不是一种新的编程语言，而是一种用于创建更好更快以及交互性更强的Web应用程序的技术。**
+
+> 增加**BS**(**浏览器/服务器**)的体验性 
+>
+> B/S: 未来的主流，并且会爆发式的持续增长;
+
+> 产品链: H5＋网页＋客户端＋手机端( Android . lOS )+小程序
+
+jQuery在全局对象`jQuery`（也就是`$`）绑定了`ajax()`函数，可以处理AJAX请求。`ajax(url, settings)`函数需要接收一个URL和一个可选的`settings`对象，常用的选项如下：
+
+- async：是否异步执行AJAX请求，默认为`true`，千万不要指定为`false`；
+- method：发送的Method，缺省为`'GET'`，可指定为`'POST'`、`'PUT'`等；
+- contentType：发送POST请求的格式，默认值为`'application/x-www-form-urlencoded; charset=UTF-8'`，也可以指定为`text/plain`、`application/json`；
+- data：发送的数据，可以是字符串、数组或object。如果是GET请求，data将被转换成query附加到URL上，如果是POST请求，根据contentType把data序列化成合适的格式；
+- headers：发送的额外的HTTP头，必须是一个object；
+- dataType：接收的数据格式，可以指定为`'html'`、`'xml'`、`'json'`、`'text'`等，缺省情况下根据响应的`Content-Type`猜测。
+
+**伪造Ajax**
+
+纯jS实现Ajax不推荐，直接使用jquery提供的，更方便学习,
+
+```html
+ <script type="text/javascript">
+
+        window.onload = function f() {
+            var myDate = new Date();
+            document.getElementById('currentTime').innerText = myDate.getTime();
+        }
+
+        function loadPage() {
+            var targetURL = document.getElementById('url').value;
+            console.log(targetURL);
+            document.getElementById('iframePosition').src = targetURL;
+        }
+
+</script>
+
+    <div>
+        <p>请输入要加载的地址:<span id="currentTime"></span></p>
+        <p>
+            <input type="text" id="url" value="https://www.aobayu.cn/">
+            <input type="button" value="提交" onclick="loadPage()">
+        </p>
+    </div>
+    <div>
+        <div>
+            <h3> 加载页面的位置:</h3>
+        </div>
+        <iframe src="" id="iframePosition" width="100%" height="550px">
+
+        </iframe>
+    </div>
+```
+
+> jQuery提供多个与AJAX有关的方法。通过jQuery AJAX方法，您能够使用HTTP Get和HTTP Post从远程服务器上请求文本、HTML、XML或JSON同时您能够把这些外部数据直接载入网页的被选元素中。jQuery Ajax本质就XMLHttpRequest，对他进行了封装，方便调用!
+
+Ajax的核心是XMLHttpRequest对象(XHR)。XHR为向服务器发送请求和解析服务器响应提供了接口。能够以异步方式从服务器获取新数据。
 
 ## jQuery
 JavaScript
