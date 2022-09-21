@@ -130,7 +130,7 @@ div#category{
 }
 
 #footer::before {
-  background: rgba(255,255,255, 0.3);
+  background: rgba(255,255,255, 0.3)!important;
 }
 
 #footer #footer-wrap {
