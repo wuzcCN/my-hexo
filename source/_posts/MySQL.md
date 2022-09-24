@@ -663,6 +663,74 @@ SELECT * FROM emp LIMIT 6,3;-- 第三页
 */
 ```
 
+### 附加查询
+
+> **UNION ALL**
+
+UNION 操作符用于合并两个或多个 SELECT 语句的结果集。
+
+请注意，UNION 内部的 SELECT 语句必须拥有相同数量的列。列也必须拥有相似的数据类型。同时，每条 SELECT 语句中的列的顺序必须相同。
+
+```sql
+-- UNION 语法
+SELECT column_name(s) FROM table_name1
+UNION
+SELECT column_name(s) FROM table_name2;
+```
+
+**注释：**默认地，UNION 操作符选取不同的值。如果允许重复的值，请使用 UNION ALL。
+
+```sql
+-- UNION ALL 语法
+SELECT column_name(s) FROM table_name1
+UNION ALL
+SELECT column_name(s) FROM table_name2;
+```
+
+> **case when用法**
+
+当我们需要从数据源上 直接判断数据显示代表的含义的时候 ,就可以在SQL语句中使用 Case When这个函数了
+
+Case具有两种格式。简单Case函数和Case搜索函数。
+
+**简单Case函数 **
+
+```sql
+/*case 列名
+
+　　　　when 条件值1 then 选择项1
+
+　　　　when 条件值2 then 选项2.......
+
+　　　　else 默认值 end*/
+SELECT name,
+CASE score
+	WHEN 'A' THEN '优'
+    WHEN 'B' THEN '良'
+    WHEN 'C' THEN '不及格'
+    ELSE '不及格' END
+FROM studen;
+```
+
+**Case搜索函数**
+
+```sql
+　/*case
+
+　　　　when 列名= 条件值1 then 选择项1
+
+　　　　when 列名=条件值2 then 选项2.......
+
+　　　　else 默认值 end*/
+SELECT name,
+CASE 
+	WHEN score>90 THEN '优'
+    WHEN score>70 THEN '良'
+    WHEN score<60 THEN '不及格'
+    ELSE '不及格' END AS get
+FROM studen;
+```
+
 ## MySQL约束
 
 **约束的作用:** 
