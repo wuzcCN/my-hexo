@@ -693,7 +693,7 @@ SELECT column_name(s) FROM table_name2;
 
 Case具有两种格式。简单Case函数和Case搜索函数。
 
-**简单Case函数 **
+**简单Case函数**
 
 ```sql
 /*case 列名
