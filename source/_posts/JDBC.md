@@ -885,3 +885,298 @@ public class DruidUtils {
     }
 ```
 
+## DBUtils工具类
+
+**DBUtils简介**
+
+使用JDBC我们发现冗余的代码太多了,为了简化开发 我们选择使用 DbUtils
+
+Commons DbUtils是Apache组织提供的一个对JDBC进行简单封装的开源工具类库，使用它能够简化JDBC应用程序的开发，同时也不会影响程序的性能。
+
+使用方式:
+
+DBUtils就是JDBC的简化开发工具包。需要项目导入**commons-dbutils-1.6.jar**。
+
+**Dbutils核心功能介绍**
+
+- **QueryRunner** 中提供对sql语句操作的API.
+- **ResultSetHandler**接口，用于定义select操作后，怎样封装结果集.
+- DbUtils类,他就是一个工具类,定义了关闭资源与事务处理相关方法.
+
+**JavaBean组件**
+
+JavaBean 就是一个类, 开发中通常用于封装数据,有一下特点
+
+1. 需要实现 序列化接口, Serializable (暂时可以省略)
+
+1. 提供私有字段: private 类型 变量名;
+
+1. 提供 getter 和 setter
+
+1. 提供 空参构造
+
+创建Employee类和数据库的employee表对应，我们可以创建一个 entity包,专门用来存放 JavaBean类
+
+### QueryRunner核心类
+
+**构造方法**
+
+- QueryRunner()
+
+- QueryRunner(DataSource ds) ,提供数据源（连接池），DBUtils底层自动维护连接connection
+
+**常用方法**
+
+- update(Connection conn, String sql, Object… params) ，用来完成表数据的增加、删除、更新操作
+
+- query(Connection conn, String sql, ResultSetHandler rsh, Object… params) ，用来完成表数据的查询操作
+
+```java
+//手动方式 创建QueryRunner对象具体使用到的时候在给信息
+QueryRunner qr = new QueryRunner();
+//自动创建 传入数据库连接池对象  直接给DataSource
+QueryRunner qr2 = new QueryRunner(DruidUtils.getDataSource());
+```
+
+> 工具类需要返回dataSource
+
+```java
+//获取连接池对象
+public static DataSource getDataSource(){
+	return dataSource;
+}
+```
+
+### 增、删、改操作
+
+**核心方法**
+
+- update(Connection conn, String sql, Object… params)
+
+- Object... param Object类型的 可变参,用来设置占位符上的参数
+
+**步骤:**
+
+1.创建QueryRunner(手动或自动)
+
+2.占位符方式 编写SQL
+
+3.设置占位符参数
+
+4.执行
+
+>添加
+
+```java
+@Test
+    public void testInsert() throws SQLException {
+        //1.创建 QueryRunner 手动模式创建
+        QueryRunner qr = new QueryRunner();
+
+        //2.编写 占位符方式
+        String sql = "insert into employee values(?,?,?,?,?,?)";
+
+        //3.设置占位符的参数
+        Object[] param = {null,"张百万",20,"女",10000,"1990-12-26"};
+
+        //4.执行 update方法
+        Connection con = DruidUtils.getConnection();
+        int i = qr.update(con, sql, param);
+
+        //5.释放资源
+        DbUtils.closeQuietly(con);
+    }
+```
+
+> 修改
+
+```java
+//修改操作 修改姓名为张百万的员工工资 
+    @Test
+    public void testUpdate() throws SQLException {
+        //1.创建QueryRunner对象 自动模式,传入数据库连接池 
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+
+        //2.编写SQL 
+        String sql = "update employee set salary = ? where ename = ?";
+
+        //3.设置占位符参数 
+        Object[] param = {0,"张百万"};
+
+        //4.执行update, 不需要传入连接对象 
+        qr.update(sql,param);
+    }
+```
+
+> 删除
+
+```java
+//删除操作 删除id为1 的数据 
+    @Test
+    public void testDelete() throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "delete from employee where eid = ?";
+        //只有一个参数,不需要创建数组 
+        qr.update(sql,1);
+    }
+```
+
+### 实现查询操作
+
+**ResultSetHandler接口简介**
+
+ResultSetHandler可以对查询出来的ResultSet结果集进行处理，达到一些业务上的需求。
+
+**ResultSetHandler 结果集处理类**
+
+本例展示的是使用ResultSetHandler接口的几个常见实现类实现数据库的增删改查，可以大大减少代码量，优化程序。
+
+每一种实现类都代表了对查询结果集的一种处理方式
+
+**ResultSetHandler 实现类**	
+
+- ArrayHandler	将结果集中的第一条记录封装到一个Object[]数组中，数组中的每一个元素就是这条记录中的每一个字段的值 id,ename,eage
+
+- ArrayListHandler	将结果集中的每一条记录都封装到一个Object[]数组中，将这些数组在封装到List集合中。
+
+- BeanHandler	将结果集中第一条记录封装到一个指定的javaBean中.
+
+- BeanListHandler	将结果集中每一条记录封装到指定的javaBean中，再将这些javaBean在封装到List集合中
+
+- ColumnListHandler	将结果集中指定的列的字段值，封装到一个List集合中
+
+- KeyedHandler	将结果集中每一条记录封装到Map<String,Object>,在将这个map集合做为另一个Map的value,另一个Map集合的key是指定的字段的值。
+
+- MapHandler	将结果集中第一条记录封装到了Map<String,Object>集合中，key就是字段名称，value就是字段值
+
+- MapListHandler	将结果集中每一条记录封装到了Map<String,Object>集合中，key就是字段名称，value就是字段值，在将这些Map封装到List集合中。
+
+- ScalarHandler	它是用于封装单个数据。例如 select count(*) from 表操作。
+
+**ResultSetHandler 常用实现类测试**
+
+- QueryRunner的查询方法
+
+- query方法的返回值都是泛型,具体的返回值类型,会根据结果集的处理方式,发生变化
+
+**方法**	
+
+- query(String sql, handler ,Object[] param)	自动模式创建QueryRunner, 执行查询
+
+- query(Connection con,String sql,handler,Object[] param)	手动模式创建QueryRunner, 执行查询
+
+> 查询id为5的记录,封装到数组中
+
+```java
+	/**查询id为5的记录,封装到数组中 
+     * ArrayHandler 将结果集的第一条数据封装到数组中 
+     */
+    @Test
+    public void testFindById() throws SQLException {
+        //1.创建QueryRunner 
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        //2.编写SQL 
+        String sql = "select * from employee where eid = ?";
+        //3.执行查询 
+        Object[] query = qr.query(sql, new ArrayHandler(), 5);
+        //4.获取数据 
+        System.out.println(Arrays.toString(query));
+    }
+```
+
+> 查询所有数据,封装到List集合中
+
+```java
+	/**
+     * 查询所有数据,封装到List集合中  
+     * ArrayListHandler可以将每条数据先封装到数组中, 再将数组封装到集合中 
+     */
+    @Test
+    public void testFindAll() throws SQLException {
+        //1.创建QueryRunner 
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        //2.编写SQL 
+        String sql = "select * from employee";
+        //3.执行查询 
+        List<Object[]> query = qr.query(sql, new ArrayListHandler());
+        //4.遍历集合获取数据 
+        for (Object[] objects : query) {
+            System.out.println(Arrays.toString(objects));
+        }
+    }
+```
+
+> 根据ID查询,封装到指定JavaBean中
+
+```java
+	/**
+     * 查询id为3的记录,封装到指定JavaBean中 
+     * BeanHandler 将结果集的第一条数据封装到 javaBean中 
+     */
+    @Test
+    public void testFindByIdJavaBean() throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select * from employee where eid = ?";
+        Employee employee = qr.query(sql,
+                new BeanHandler<Employee>(Employee.class), 3);
+        System.out.println(employee);
+    }
+```
+
+> 查询薪资大于 3000 的所员工信息,封装到JavaBean中再封装到List集合中
+
+```java
+	/**
+     * 查询薪资大于 3000 的所员工信息,封装到JavaBean中再封装到List集合中 
+     * BeanListHandler 将结果集的每一条和数据封装到 JavaBean中 
+     * 再将JavaBean 放到list集合中 
+     **/
+    @Test
+    public void testFindBySalary() throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select * from employee where salary > ?";
+        List<Employee> list = qr.query(sql,
+                new BeanListHandler<Employee>(Employee.class), 3000);
+        for (Employee employee : list) {
+            System.out.println(employee);
+        }
+    }
+```
+
+> 查询姓名是 张百万的员工信息,将结果封装到Map集合中
+
+```java
+	/**
+     * 查询姓名是 张百万的员工信息,将结果封装到Map集合中 
+     * MapHandler 将结果集的第一条记录封装到 Map<String,Object>中 
+     * key对应的是 列名 value对应的是 列的值 
+     **/
+    @Test
+    public void testFindByName() throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select * from employee where ename = ?";
+        Map<String, Object> map = qr.query(sql, new MapHandler(), "张百万");
+        Set<Map.Entry<String, Object>> entries = map.entrySet();
+        for (Map.Entry<String, Object> entry : entries) {
+            //打印结果 
+            System.out.println(entry.getKey() +" = " +entry.getValue());
+        }
+    }
+```
+
+> 查询所有员工的薪资总额
+
+```java
+	/**
+     * 查询所有员工的薪资总额 
+     * ScalarHandler 用于封装单个的数据 
+     **/
+    @Test
+    public void testGetSum() throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select sum(salary) from employee";
+        Double sum = (Double)qr.query(sql, new ScalarHandler<>());
+        System.out.println("员工薪资总额: " + sum);
+    }
+```
+
