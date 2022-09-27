@@ -787,11 +787,13 @@ INSERT INTO employee (eid, ename, age, sex, salary, empdate) VALUES(NULL,'李白
 
 出现窗口直接默认，点击确定，完成引用MySQL驱动包
 
+在 src 目录下右键创建 druid.properties 存入以下代码
+
 ```jso
 driverClassName=com.mysql.jdbc.Driver
-url=jdbc:mysql:///db1?useSSL=false&useServerPrepStmts=true
+url=jdbc:mysql:///db1?useSSL=false&useServerPrepStmts=true&characterEncoding=UTF-8
 username=root
-password=1234
+password=123456
 #初始化连接数量
 initialSize=5
 #最大连接数
