@@ -867,7 +867,7 @@ public class DruidUtils {
 ### 测试工具类
 
 ```java
-// 需求 查询 薪资在3000 到 5000之间的员工的姓名 
+//需求 查询 薪资在3000 到 5000之间的员工的姓名 
     public static void main(String[] args) throws SQLException {
         //1.获取连接 
         Connection con = DruidUtils.getConnection();
@@ -883,6 +883,57 @@ public class DruidUtils {
         //5.释放资源 
         DruidUtils.close(con,statement,resultSet);
     }
+```
+
+> 对象数组接收 sql 数据
+
+```java
+public static void main(String[] args) throws SQLException {
+        Connection conn = DruidUtils.getConnection();
+        Statement statement = conn.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * FROM employee");
+        List<Student> students = new ArrayList<>();
+        while (resultSet.next()){
+            Student student = new Student();
+            String name =resultSet.getString("ename");
+            int age = resultSet.getInt("age");
+            student.setName(name);
+            student.setAge(age);
+            System.out.println(student);
+        }
+        DruidUtils.close(resultSet,statement,conn);
+}
+```
+
+```java
+public class Student {
+    String name;
+    int age;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
+    }
+}
 ```
 
 ## DBUtils工具类
@@ -1180,3 +1231,332 @@ ResultSetHandler可以对查询出来的ResultSet结果集进行处理，达到�
     }
 ```
 
+## MySql元数据
+
+**除了表之外的数据都是元数据,可以分为三类**
+
+- 查询结果信息： UPDATE 或 DELETE语句 受影响的记录数。
+
+- 数据库和数据表的信息： 包含了数据库及数据表的结构信息。
+
+- MySQL服务器信息： 包含了数据库服务器的当前状态，版本号等。
+
+**常用命令**
+
+```sql
+-- 元数据相关的命令介绍
+-- 1.查看服务器当前状态
+show status;
+-- 2.查看MySQl的版本信息
+select version();
+-- 3.查询表中的详细信息   和desc table_name一样
+show columns from table_name;
+-- 4.显示数据表的详细索引信息
+show index from table_name;
+-- 5.列出所有数据库 
+show databases;
+-- 6.显示当前数据库的所有表
+show tables;
+-- 7.获取当前的数据库名
+select database();
+```
+
+> 使用JDBC 获取元数据
+
+通过JDBC 也可以获取到元数据,比如数据库的相关信息,或者当我们使用程序查询一个不熟悉的表时, 我们可以通过获取元素据信息,了解表中有多少个字段,字段的名称 和 字段的类型.
+
+> JDBC中描述元数据的类
+
+| 元数据类          | 作用                   |
+| ----------------- | ---------------------- |
+| DatabaseMetaData  | 描述数据库的元数据对象 |
+| ResultSetMetaData | 描述结果集的元数据对象 |
+
+- 获取元数据对象的方法 : getMetaData ()
+  - connection 连接对象, 调用 getMetaData () 方法,获取的是DatabaseMetaData 数据库元数据对象
+  - PrepareStatement 预处理对象调用 getMetaData () , 获取的是ResultSetMetaData , 结果集元数据对象
+
+- DatabaseMetaData的常用方法
+  - getURL() : 获取数据库的URL
+  - getUserName(): 获取当前数据库的用户名
+  - getDatabaseProductName(): 获取数据库的产品名称
+  - getDatabaseProductVersion(): 获取数据的版本号
+  - getDriverName(): 返回驱动程序的名称
+  - isReadOnly(): 判断数据库是否只允许只读 true 代表只读
+
+- ResultSetMetaData的常用方法
+  - getColumnCount() : 当前结果集共有多少列
+  - getColumnName(int i) : 获取指定列号的列名, 参数是整数 从1开始
+  - getColumnTypeName(int i): 获取指定列号列的类型, 参数是整数 从1开始
+
+```java
+//1.获取数据库相关的元数据信息 使用DatabaseMetaData 
+    @Test
+    public void testDataBaseMetaData() throws SQLException {
+        //1.获取数据库连接对象 
+        Connection connection = DruidUtils.getConnection();
+        //2.获取代表数据库的 元数据对象 
+        DatabaseMetaData DatabaseMetaData metaData = connection.getMetaData();
+        //3.获取数据库相关的元数据信息 
+        String url = metaData.getURL();
+        System.out.println("数据库URL: " + url);
+        String userName = metaData.getUserName();
+        System.out.println("当前用户: " + userName );
+        String productName = metaData.getDatabaseProductName();
+        System.out.println("数据库产品名: " + productName);
+        String version = metaData.getDatabaseProductVersion();
+        System.out.println("数据库版本: " + version);
+
+        String driverName = metaData.getDriverName();
+        System.out.println("驱动名称: " + driverName);
+        //判断当前数据库是否只允许只读 
+        boolean b = metaData.isReadOnly();
+        //如果是 true 就表示 只读 
+        if(b){
+            System.out.println("当前数据库只允许读操作!");
+        }else{
+            System.out.println("不是只读数据库");
+        }
+        connection.close();
+    }
+    //获取结果集中的元数据信息 
+    @Test
+    public void testResultSetMetaData() throws SQLException {
+        //1.获取连接 
+        Connection con = DruidUtils.getConnection();
+        //2.获取预处理对象 
+        PreparedStatement ps = con.prepareStatement("select * from employee");
+        ResultSet resultSet = ps.executeQuery();
+        //3.获取结果集元素据对象 
+        ResultSetMetaData metaData = ps.getMetaData();
+        //1.获取当前结果集 共有多少列 
+        int count = metaData.getColumnCount();
+        System.out.println("当前结果集中共有: " + count + " 列");
+        //2.获结果集中 列的名称 和 类型 
+        for (int i = 1; i <= count; i++) {
+            String columnName = metaData.getColumnName(i);
+            System.out.println("列名: "+ columnName);
+            String columnTypeName = metaData.getColumnTypeName(i);
+            System.out.println("类型: " +columnTypeName);
+        }
+    //释放资源 
+        DruidUtils.close(con,ps,resultSet);
+    }
+```
+
+## Dao模式
+
+**什么是Dao模式**
+
+DAO（Data Access Object）顾名思义是一个为数据库或其他持久化机制提供了抽象接口的对象，在不暴露底层持久化方案实现细节的前提下提供了各种数据访问操作
+
+**为什么要使用DAO模式**
+
+在目前的企业应用系统设计中，MVC，即 Model（模型）- View（视图）- Control（控制）为主要的系统架构模式。MVC 中的 Model 包含了复杂的业务逻辑和数据逻辑，以及数据存取机制（如 JDBC的连接、SQL生成和Statement创建、还有ResultSet结果集的读取等）等。将这些复杂的业务逻辑和数据逻辑分离，以将系统的紧耦合关系转化为松耦合关系（即解耦合），是降低系统耦合度迫切要做的。MVC 模式需要解决2个问题：
+
+- 将表现层（即View）和数据处理层（即Model）分离的解耦合。
+
+- 将数据处理层内部的业务逻辑和数据访问分离的解耦合。
+
+第一个问题可以使用控制器来解决，第二个问题可以使用DAO模式来解决。
+
+（1）JDBC访问数据时，将业务代码和数据访问代码混在一起编写（藕合），造成程序的
+
+-  可读性差。
+
+-  不利于后期修改和维护。
+
+-  不利于代码复用。
+
+（2）用面向接口编程，可以降低代码间的耦合性。
+
+-  隔离业务逻辑代码和数据访问代码。
+
+-  隔离不同数据库的实现。
+
+业务逻辑代码是指程序需要实现的功能算法，如银行ATM机实现的功能有存款、取款、转账等，这些属于程序需要实现的功能。而数据访问代码是指对存储在数据库的数据进行CRUD（增、查、改、删）操作代码。存款、取款和转账的逻辑代码是不同的，但最终都是对数据库中的余额进行修改，使用Dao模式可以将业务逻辑代码和数据访问代码分离，降低代码间的耦合性
+
+**对象关系映射ORM**
+
+**什么是ORM**
+
+对象关系映射（Object Relational Mapping，简称ORM）。ORM指的是面向对象的对象模型和关系型数据库的数据结构之间的相互转换。它的作用是在关系型数据库和对象之间作一个映射，这样，我们在具体的操作数据库的时候，就不需要再去和复杂的SQL语句打交道，也不需要数据编写大量的DAO层的代码，用来从数据库保存、删除和读取对象信息，只要像平时操作对象一样操作它就可以了 。ORM很好的实现了数据持久化。数据持久化就是将内存中的数据模型转换为存储模型，以及将存储模型转换为内存中的数据模型的统称。
+
+ORM拱了三种映射为实现数据持久化
+
+- 类—表映射。在开发系统时，数据库中有几张表，在Java中就应该编写几个类。
+
+- 属性—列映射。表对应的类的属性名与列名一样，数据类型与列的数据类型一样。
+
+- 对象—行映射。一个对象可以转化为一行数据，同样，一行数据也可以转化为一个对象。
+
+Dao模式项目结构
+
+实体类:和数据库表格一一对应的类,单独放入一个包中,包名往往是 pojo/entity/bean,要操作的每个表格都应该有对应的实体类
+
+emp > class Emp  
+
+dept > class Dept  
+
+account > class Account 
+
+DAO 层:定义了对数据要执行那些操作的接口和实现类,包名往往是 dao/mapper,要操作的每个表格都应该有对应的接口和实现类
+
+emp > interface EmpDao >EmpDaoImpl
+
+dept > interface DeptDao> DeptDaoImpl
+
+Mybatis/Spring JDBCTemplate 中,对DAO层代码进行了封装,代码编写方式会有其他变化
+
+**简单的Java对象POJO**
+
+**什么是POJO**
+
+POJO（Plain Ordinary Java Object）简单的Java对象，实际就是普通JavaBeans。方便程序员使用数据库中的数据表，POJO有一些private的参数作为对象的属性。然后针对每个参数定义了get和set方法作为访问的接口。
+
+**POJO的作用**
+
+在MVC的设计模式，视图层、业务层、数据访问层和数据库之间都是通过JavaBean进行数据封装和传递。
+
+- 持久化对象**Entity**：Entity称为实体类，封装持久化的数据，数据库做orm映射，一个Entity对应一数据库中一张表。
+
+- 查询参数对象**VO**：VO（View object）被称为视图对象，html jsp 上显示的对象
+
+- 数据转换对象**DTO**：data transfer object 数据传输对象 并不在页面上做展示，只是传输用 简化数据
+
+- **domain** 领域模型 银行 保险 电商 物流 医疗 DDD 领域驱动设计
+
+- 银行职员 user Account 账户 VIP 积分
+
+### 准备测试数据
+
+```sql
+# 创建数据库
+create database db6 character set utf8;
+# 创建商品表
+CREATE TABLE product (
+       pid varchar(32)  PRIMARY KEY, -- 商品id
+       pname varchar(50) , -- 商品名称
+       price double, -- 商品价格
+       pdesc varchar(255), -- 商品描述
+       pflag int(11) -- 商品状态 1 上架 ,0 下架
+);
+INSERT INTO `product` VALUES
+('1','小米12',2200,'小米 移动联通电信4G手机 双卡双待',0),
+('2','华为Mate50',2599,'华为 双卡双待 高清大屏',0),
+('3','OPPO',3000,'移动联通 双4G手机',0),
+('4','华为荣耀',1499,'3GB内存标准版 黑色 移动4G手机',0),
+('5','华硕台式电脑',5000,'爆款直降，满千减百',0),
+('6','MacBook',6688,'128GB 闪存',0),
+('7','ThinkPad',4199,'轻薄系列1)',0),
+('8','联想小新',4499,'14英寸超薄笔记本电脑',0),
+('9','李宁音速',500,'实战篮球鞋',0),
+('10','AJ11',3300,'乔丹实战系列',0),
+('11','AJ1',5800,'精神小伙系列',0);
+```
+
+**项目结构**
+
+com.aaa.app 测试包 用于对DAO代码进行测试
+
+com.aaa.dao dao包 数据访问层,包含所有对数据库的相关操作的类
+
+com.aaa.entity 实体包 保存根据数据库表 对应创建的JavaBean类
+
+com.aaa.utils 工具包 
+
+**导入所需Jar包**
+
+commons-dbutils-1.6.jar
+
+druid-1.1.21.jar
+
+mysql-connector-java-5.1.48.jar
+
+**导入配置文件及工具类**
+
+resource --> druid.properties
+
+utils-------->DruidUtils
+
+### JavaBean类创建
+
+```java
+public class Product {
+ 
+        private String pid;
+ 
+        private String pname;
+ 
+        private double price;
+ 
+        private String pdesc;
+ 
+        private int pflag; //是否上架 1 上架 ,0 下架
+
+        //提供 get set toString方法
+}
+```
+
+### 编写DAO类
+
+```java
+public class ProductDao {
+    //查询所有商品信息
+    public List<Product> findProduct() throws SQLException {
+        
+    QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+    String sql = "select * from product";
+           //查询结果是一个List集合, 使用BeanListHandler 封装结果集
+    List<Product> list = qr.query(sql, new BeanListHandler<Product>(Product.class));
+    return list;
+    }
+    //根据商品ID 获取商品
+    public Product findProductById(String pid) throws SQLException {
+           QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+           String sql = "select * from product where pid = ?";
+           Product product = qr.query(sql, new BeanHandler<Product>(Product.class), pid);
+           return product;
+    }
+
+	//2查询商品个数
+    public int getCount() throws SQLException {
+           QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+           String sql = "select count(*) from product";
+           //获取的单列数据 ,使用ScalarHandler 封装
+           Long count = (Long)qr.query(sql,new ScalarHandler<>());
+           //将Lang类型转换为 int 类型,并返回
+           return count.intValue();
+    }
+}
+```
+
+### 测试 ProductDao
+
+```java
+public class TestProductDao {
+ 
+        ProductDao productDao = new ProductDao();
+ 
+        @Test
+        public void testFindProduct() throws SQLException {
+            List<Product> list = productDao.findProduct();
+            for (Product product : list) {
+                System.out.println(product);
+            }
+        }
+    
+        @Test
+        public void testFindProductById() throws SQLException {
+            Product product = productDao.findProductById("1");
+            System.out.println(product);
+        }
+
+        @Test
+        public void testGetCount() throws SQLException {
+            //查询商品总数量
+            int count = productDao.getCount();
+            System.out.println("商品个数: " + count);
+        }
+    }
+```
