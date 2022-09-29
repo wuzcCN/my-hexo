@@ -503,9 +503,9 @@ tag_ui: # 留空或 index
 # Website Background (設置網站背景)
 # can set it to color or image (可設置圖片 或者 顔色)
 # The formal of image: url(http://xxxxxx.com/xxx.jpg)
-background: url(https://s1.328888.xyz/2022/09/09/99W9n.jpg)
+background: url(https://s1.328888.xyz/2022/09/29/sWpWU.png)
 # Footer Background
-footer_bg: "rgba(245, 245, 245, 0.4)"
+footer_bg: 
 
 # the position of bottom right button/default unit: px (右下角按鈕距離底部的距離/默認單位為px)
 rightside-bottom:
