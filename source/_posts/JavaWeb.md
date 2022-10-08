@@ -348,6 +348,7 @@ java.util.logging.ConsoleHandler.encoding = GBK
 5. 添加 :war exploded
 
 ![](https://s1.328888.xyz/2022/10/08/fRR9i.png)
+
 6. 启动
 
 ![](https://s1.328888.xyz/2022/10/08/fRHR7.png)
