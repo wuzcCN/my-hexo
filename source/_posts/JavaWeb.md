@@ -648,11 +648,9 @@ public class HelloServlet  implements Servlet {
 
 ​	（1）在浏览器输入URL按回车 
 
-​	（2）点击<a>超链接 
+​	（2）点击<a>超链接 </a>
 
-​	（3）点击submit按钮，提交 <form method="get">表单 GET请求特点： 
-
-​		会将请求数据添加到请求URL地址的后面，只能提交少量的数据、不安全
+​	（3）点击submit按钮，提交 <form method="get">表单 GET请求特点：会将请求数据添加到请求URL地址的后面，只能提交少量的数据、不安全
 
 **POST请求**
 
