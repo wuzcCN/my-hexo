@@ -852,3 +852,535 @@ public class ParameterServlet extends HelloServlet{
     }
 }
 ```
+
+### HttpServletRequest接口
+
+web服务器接收到客户端的http请求，针对这个请求，分别创建一个代表请求的HttpServletRequest对象，代表响应的一个HttpServletResponse；
+
+- 如果要获取客户端请求过来的参数：找HttpServletRequest
+- 如果要给客户端响应一些信息：找HttpServletResponse
+
+基本概念
+
+- javax.servlet.http.HttpServletRequest接口是ServletRequest接口的子接口，主要用于提供HTTP 请求信息的功能。 
+
+- 不同于表单数据，在发送HTTP请求时，HTTP请求头直接由浏览器设置。 
+
+- 可直接通过HttpServletRequest对象提供的一系列get方法获取请求头数据。 
+
+**常用的方法**
+
+**String getRequestURI()**	返回此请求的资源路径信息
+
+**StringBuffer getRequestURL()**	返回此请求的完整路径信息
+
+**String getMethod()**	返回发出此请求的HTTP方法的名称，例如GET、POST
+
+**String getQueryString()**	返回路径后面请求中附带的参数
+
+**String getServletPath()**	返回此请求中调用servlet的路径部分
+
+```java
+System.out.println("发送请求的客户端IP地址为：" +request.getRemoteAddr());
+System.out.println("发送请求的客户端端口号为：" + request.getRemotePort());
+System.out.println("请求资源的路径为：" + request.getRequestURI());
+System.out.println("请求资源的完整路径为：" + request.getRequestURL());
+System.out.println("请求方式为：" + request.getMethod());
+System.out.println("请求的附带参数为：" + request.getQueryString());
+System.out.println("请求的Servlet路径为：" + request.getServletPath());
+```
+
+### ServletResponse接口
+
+基本概念
+
+- javax.servlet.ServletResponse接口用于定义一个对象来帮助Servlet向客户端发送响应。 
+
+- Servlet容器创建ServletResponse对象，并将其作为参数传递给servlet的service方法。
+
+**常用方法**
+
+**PrintWriter getWriter()**	返回可向客户端发送字符文本的PrintWriter对象
+
+**String getCharacterEncoding()**	获取响应内容的编码方式
+
+**void setContentType(String type)**	如果尚未提交响应，则设置发送到客户端响应的内容类型。内容类型可以包括字符编码规范，例如text/html;charset=UTF-8
+
+```java
+@Override
+public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// 获取响应数据的默认编码方式
+        String characterEncoding = response.getCharacterEncoding();
+        System.out.println("服务器响应数据的默认编码方式为：" + characterEncoding);
+        // ISO-8859-1
+        // 设置服务器和浏览器的编码方式以及文本类型
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter writer = response.getWriter();
+        writer.write("我接收到了！");
+        writer.write("<h1>" +"名字："+ request.getParameter("name") + "</h1>");
+        System.out.println("服务器发送数据成功！");
+        writer.close();
+}
+```
+
+### HttpServletResponse接口
+
+基本概念
+
+javax.servlet.http.HttpServletResponse接口继承ServletResponse接口，以便在发送响应时提供特定于HTTP的功能。
+
+**常用方法**
+
+void sendRedirect(String location)   使用指定的重定向位置URL向客户端发送临时重定向响应
+
+### 重定向和转发
+
+**重定向的概述** 
+
+重定向的概念
+
+首先客户浏览器发送http请求，当web服务器接受后发送302状态码响应及对应新的location给客户浏览器，客户浏览器发现是302响应，则自动再发送一个新的http请求，请求url是新的location 地址，服务器根据此请求寻找资源并发送给客户。 
+
+重定向的实现
+
+实现重定向需要借助javax.servlet.http.HttpServletResponse接口中的以下方法：
+
+void sendRedirect(String location)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>重定向的测试</title>
+</head>
+<body>
+<form action="redirectServlet" method="post">
+    <input type="submit" value="重定向"/>
+</form>
+</body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>重定向后的页面</title>
+</head>
+<body>
+<h1>服务器重新指定位置后的页面</h1>
+</body>
+</html>
+```
+
+```java
+@WebServlet("/redirectServlet")
+public class RedirectServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("接收到了浏览器的请求...");
+        // 重定向，也就是给浏览器发送一个新的位置
+        resp.sendRedirect("target.html");
+        //response.sendRedirect("www.aobayu.cn");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        this.doPost(req, resp);
+    }
+}
+```
+
+重定向的特点
+
+- 重定向之后，浏览器地址栏的URL会发生改变。 
+
+- 重定向过程中会将前面Request对象销毁，然后创建一个新的Request对象。 
+
+- 重定向的URL可以是其它项目工程。
+
+**转发的概述**
+
+转发的概念
+
+一个Web组件（Servlet/JSP）将未完成的处理通过容器转交给另外一个Web组件继续处理，转发 的各个组件会共享Request和Response对象。
+
+转发的实现
+
+绑定数据到Request对象
+
+**Object getAttribute(String name)** 将指定属性值作为对象返回，若给定名称属性不存在，则返回空值 
+
+**void setAttribute(String name,Object o)**  在此请求中存储属性值
+
+获取转发器对象
+
+**RequestDispatcher getRequestDispatcher(String path)**	返回一个RequestDispatcher对象，该对象充当位于给定路径上的资源的包装器
+
+转发操作
+
+**void forward(ServletRequest request, ServletResponse response)**	将请求从一个servlet转发到服务器上的另一个资源（Servlet、JSP文件或HTML文件）
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>转发的测试</title>
+</head>
+<body>
+<form action="forwardServlet" method="post">
+    <input type="submit" value="转发"/>
+</form>
+</body>
+</html>
+```
+
+```java
+@WebServlet("/forwardServlet")
+public class ForwardServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("接收到了浏览器的请求...");
+        // 向request对象中设置属性信息
+        req.setAttribute("key1", "value1");
+        // 转发，也就是让Web组件将任务转交给另外一个Web组件
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/targetServlet");
+
+        requestDispatcher.forward(req, resp);
+    }
+}
+```
+
+```java
+@WebServlet("/targetServlet")
+public class TargetServlet extends HelloServlet{
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        this.doPost(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("转发过来了...");
+        // 获取request对象中的属性值判断是否共享
+        Object key1 = req.getAttribute("key1");
+        System.out.println("获取到的属性值为：" + key1);// value1
+        // 通过打印流向页面写入转发成功的信息
+        resp.setContentType("text/html;charset=utf-8");
+        resp.getWriter().write("<h1>转发成功！</h1>");
+    }
+}
+```
+
+转发的特点
+
+- 转发之后浏览器地址栏的URL不会发生改变。
+
+- 转发过程中共享Request对象。 
+
+- 转发的URL不可以是其它项目工程。
+
+### Servlet接收中文乱码
+
+**接收乱码原因**
+
+浏览器在提交表单时，会对中文参数值进行自动编码。当Tomcat服务器接收到浏览器请求后自动 解码，当编码与解码方式不一致时,就会导致乱码。 
+
+**解决POST接收乱码**
+
+```Java
+//接收之前设置编码方式： 
+request.setCharacterEncoding("utf-8") 
+//提示：必须在调用request.getParameter("name")之前设置
+```
+
+ **解决GET接收乱码**
+
+```Java
+// 将接收到的中文乱码重新编码: 
+// 接收到get请求的中文字符串 
+String name = request.getParameter("name"); 
+// 将中文字符重新编码，默认编码为ISO-8859-1 
+String userName = new String(name.getBytes("ISO-8859-1"),"utf-8");
+```
+
+## Cookie、Session
+
+### 会话
+
+**会话**：用户打开一个浏览器，点击了很多超链接，访问多个web资源，关闭浏览器，这个过程可以称之为会话；
+
+**有状态会话**：一个同学来过教室，下次再来教室，我们会知道这个同学，曾经来过，称之为有状态会话；
+
+**你能怎么证明你是学生？**
+
+1. 学生证书
+2. 学校登记，你来过了
+
+**一个网站，怎么证明你来过？**
+
+客户端 服务端
+
+1. 服务端给客户端一个 信件，客户端下次访问服务端带上信件就可以了； cookie
+2. 服务器登记你来过了，下次你来的时候我来匹配你； seesion
+
+**状态管理**
+
+Web程序基于HTTP协议通信，而HTTP协议是”无状态”的协议，一旦服务器响应完客户的请求之 后，就断开连接，而同一个客户的下一次请求又会重新建立网络连接。 
+
+服务器程序有时是需要判断是否为同一个客户发出的请求，比如客户的多次选购商品。因此，有必 要跟踪同一个客户发出的一系列请求。
+
+把浏览器与服务器之间多次交互作为一个整体，将多次交互所涉及的数据保存下来，即状态管理。
+
+多次交互的数据状态可以在客户端保存，也可以在服务器端保存。状态管理主要分为以下两类： 
+
+**客户端管理**：将状态保存在客户端。基于Cookie技术实现。
+
+ **服务器管理**：将状态保存在服务器端。基于Session技术实现。
+
+### 保存会话的两种技术
+
+**cookie**
+
+- 客户端技术 （响应，请求）
+
+**session**
+
+- 服务器技术，利用这个技术，可以保存用户的会话信息？ 我们可以把信息或者数据放在Session中！
+
+常见常见：网站登录之后，你下次不用再登录了，第二次访问直接就上去了！
+
+### Cookie技术
+
+- Cookie本意为”饼干“的含义，在这里表示客户端以“名-值”形式进行保存的一种技术。
+
+- 浏览器向服务器发送请求时，服务器将数据以Set-Cookie消息头的方式响应给浏览器，然后浏览器 会将这些数据以文本文件的方式保存起来。
+
+- 当浏览器再次访问服务器时，会将这些数据以Cookie消息头的方式发送给服务器。
+
+### Cookie的方法
+
+使用javax.servlet.http.Cookie类的构造方法实现Cookie的创建。
+
+| 方法声明                          | 功能介绍                 |
+| --------------------------------- | ------------------------ |
+| Cookie(String name, String value) | 根据参数指定数值构造对象 |
+
+使用javax.servlet.http.HttpServletResponse接口的成员方法实现Cookie的添加。
+
+| 方法声明                      | 功能介绍                 |
+| ----------------------------- | ------------------------ |
+| void addCookie(Cookie cookie) | 添加参数指定的对象到响应 |
+
+```java
+@WebServlet(name = "CookieServlet", urlPatterns = "/cookie")
+public class CookieServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 1.测试一下浏览器的请求是否到达
+        System.out.println("看看有没有执行到这里哦！");
+        // 2.创建Cookie对象并添加到响应信息中
+        Cookie cookie = new Cookie("name", "zhangfei");
+        response.addCookie(cookie);
+        System.out.println("创建Cookie成功！");
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.doPost(request, response);
+    }
+}
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试</title>
+</head>
+<body>
+<form action="cookie" method="post">
+    <input type="submit" value="测试cookie"/>
+</form>
+</body>
+</html>
+```
+
+> 使用javax.servlet.http.HttpServletRequest接口的成员方法实现Cookie对象的获取。
+
+| 方法声明              | 功能介绍                         |
+| --------------------- | -------------------------------- |
+| Cookie[] getCookies() | 返回此请求中包含的所有Cookie对象 |
+
+```java
+@WebServlet(name = "CookieServlet2", urlPatterns = "/cookie2")
+    public class CookieServlet2 extends HttpServlet {
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            // 1.获取客户端发来的Cookie信息并打印出来
+            Cookie[] cookies = request.getCookies();
+            System.out.println("获取到的Cookie信息有：");
+            for (Cookie tc : cookies) {
+                System.out.println(tc.getName() + "对应的值为：" + tc.getValue());
+            }
+        }
+
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            this.doPost(request, response);
+        }
+```
+
+> 使用javax.servlet.http.Cookie类的构造方法实现Cookie对象中属性的获取和修改。
+
+| 方法声明                       | 功能介绍                 |
+| ------------------------------ | ------------------------ |
+| String getName()               | 返回此Cookie对象中的名字 |
+| String getValue()              | 返回此Cookie对象的数值   |
+| void setValue(String newValue) | 设置Cookie的数值         |
+
+```java
+@WebServlet(name = "CookieServlet3", urlPatterns = "/cookie3")
+public class CookieServlet3 extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            // 1.获取客户端发来的Cookie信息并打印出来
+            Cookie[] cookies = request.getCookies();
+            for (Cookie tc : cookies) {
+                // 2.当获取到的Cookie对象的名字为name时，将对应的数值修改为guanyu并添加到响应信息中
+                if ("name".equalsIgnoreCase(tc.getName())) {
+                    tc.setValue("guanyu");
+                    response.addCookie(tc);
+                    break;
+                }
+            }
+            System.out.println("修改Cookie信息成功！");
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            this.doPost(request, response);
+        }
+	}
+```
+
+### Cookie的生命周期
+
+- 默认情况下，浏览器会将Cookie信息保存在内存中，只要浏览器关闭，Cookie信息就会消失。
+
+- 如果希望关闭浏览器后Cookie信息仍有效，可以通过Cookie类的成员方法实现。
+
+| 方法声明                   | 功能介绍                               |
+| -------------------------- | -------------------------------------- |
+| int getMaxAge()            | 返回cookie的最长使用期限（以秒为单位） |
+| void setMaxAge(int expiry) | 设置cookie的最长保留时间（秒）         |
+
+```java
+@WebServlet(name = "CookieServlet4", urlPatterns = "/cookie4")
+    public class CookieServlet4 extends HttpServlet {
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            // 1.创建Cookie信息
+            Cookie cookie = new Cookie("name", "liubei");
+            // 2.获取Cookie信息的默认使用期限
+            int maxAge = cookie.getMaxAge();
+            System.out.println("该Cookie的默认使用期限是：" + maxAge);
+            // 3.修改Cookie信息的使用期限
+            // 正数表示在指定的秒数后失效   负数表示浏览器关闭后失效   0表示马上失效
+            //cookie.setMaxAge(0);
+            cookie.setMaxAge(60*10);
+            // 4.添加到响应信息中
+            response.addCookie(cookie);
+            System.out.println("设置Cookie的生命周期成功！");
+        }
+
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            this.doPost(request, response);
+        }
+    }
+```
+
+> cookie存中文会报错，因此可以使用url编码
+
+```java
+@Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //发送Cookie
+        String value = "张飞";
+        //对中文进行URL编码
+        value = URLEncoder.encode(value, "UTF-8");
+        System.out.println("存储数据："+value);
+        //将编码后的值存入Cookie中
+        Cookie cookie = new Cookie("username",value);
+        //设置存活时间   ，1周 7天
+        cookie.setMaxAge(60*60*24*7);
+        //2. 发送Cookie，response
+        response.addCookie(cookie);
+    }
+```
+
+> 解码使用
+
+```java
+@Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //获取Cookie
+        //1. 获取Cookie数组
+        Cookie[] cookies = request.getCookies();
+        //2. 遍历数组
+        for (Cookie cookie : cookies) {
+            //3. 获取数据
+            String name = cookie.getName();
+            if("username".equals(name)){
+                String value = cookie.getValue();//获取的是URL编码后的值 %E5%BC%A0%E4%B8%89
+                //URL解码
+                value = URLDecoder.decode(value,"UTF-8");
+                System.out.println(name+":"+value);//value解码后为 张飞
+                break;
+            }
+        }
+    }
+```
+
+### Cookie的特点
+
+Cookie技术不适合存储所有数据，程序员只用于存储少量、非敏感信息，原因如下：
+
+- 将状态数据保存在浏览器端，不安全。
+
+- 保存数据量有限制，大约4KB左右。
+
+- 只能保存字符串信息。
+
+- 可以通过浏览器设置为禁止使用。
+
+### Session技术
+
+- Session本意为"会话"的含义，是用来维护一个客户端和服务器关联的一种技术。
+
+- 浏览器访问服务器时，服务器会为每一个浏览器都在服务器端的内存中分配一个空间，用于创建一个Session对象，该对象有一个id属性且该值唯一，我们称为SessionId，并且服务器会将这个SessionId以Cookie方式发送给浏览器存储。
+
+- 浏览器再次访问服务器时会将SessionId发送给服务器，服务器可以依据SessionId查找相对应的Session对象
+
+**什么是Session**
+
+- 服务器会给每一个用户（浏览器）创建一个Seesion对象；
+- 一个Seesion独占一个浏览器，只要浏览器没有关闭，这个Session就存在；
+- 用户登录之后，整个网站它都可以访问！--> 保存用户的信息；保存购物车的信息…..
+
+### Session和cookie的区别
+
+- Cookie是把用户的数据写给用户的浏览器，浏览器保存 （可以保存多个）
+- Session把用户的数据写到用户独占Session中，服务器端保存 （保存重要的信息，减少服务器资源的浪费）
+- Session对象由服务创建；
+
+使用场景：
+
+- 保存一个登录用户的信息；
+- 购物车信息；
+- 在整个网站中经常会使用的数据，我们将它保存在Session中；
+
+
+
