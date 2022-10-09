@@ -373,6 +373,16 @@ Maven的核心思想：约定大于配置
 
 Maven会规定好你该如何去编写我们的Java代码，必须要按照这个规范来；
 
+**Maven的作用**
+
+- 依赖管理
+  - 依赖指的就是是 我们项目中需要使用的第三方Jar包, 一个大一点的工程往往需要几十上百个 Jar包,按照我们之前的方式,每使用一种Jar,就需要导入到工程中,还要解决各种Jar冲突的问题.
+  - Maven可以对Jar包进行统一的管理,包括快速引入Jar包,以及对使用的 Jar包进行统一的版本控制
+
+- 一键构建项目
+  - 之前我们创建项目,需要确定项目的目录结构,比如 src 存放Java源码, resources 存放配置文件,还要配置环境比如JDK的版本等等,如果有多个项目 那么就需要每次自己搞一套配置,十分麻烦
+  - Maven为我们提供了一个标准化的Java项目结构,我们可以通过Maven快速创建一个标准的 Java项目.
+
 **下载安装Maven**
 
 官网;https://maven.apache.org/
@@ -454,3 +464,393 @@ maven仓库默认是在 C盘 .m2 目录下,如果怕C盘满，可以在设置中
 5. IDEA中的Maven设置，仓库位置，更改路径
 
 ![](https://s1.328888.xyz/2022/10/08/fR77j.png)
+
+**pom核心配置文件**
+
+一个 maven 工程都有一个 pom.xml 文件，通过 pom.xml 文件定义项目的信息、项目依赖、引入插 件等等。
+
+创建一个Servlet, 缺少jar包报错, 要解决问题，就是要将 servlet-api-xxx.jar 包放进来，作为 maven 工程应当添加 servlet的坐标，从而导入它的 jar
+
+ pom.xml 文件中引入依赖包的坐标 
+
+```
+<!--引入Servlet依赖-->
+<dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+</dependencies>
+```
+
+使用插件,可以由插件启动tomcat
+
+```
+<build>
+    <plugins>
+        <!--Tomcat插件 -->
+        <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat7-maven-plugin</artifactId>
+            <version>2.2</version>
+            <!--修改Tomcat的端口和访问路径-->
+            <configuration>
+                <port>80</port><!--访问端口号 -->
+                <path>/</path>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+**Maven的常用命令** 
+
+| 命令        | 说明                                                         |
+| ----------- | ------------------------------------------------------------ |
+| mvn compile | 完成编译操作，执行完毕后，会生成target目录，该目录中存放了编译后的字节码文件 |
+| mvn clean   | 执行完毕后，会将target目录删除                               |
+| mvn clean   | 执行完毕后，会在target目录中生成三个文件夹:<br>surefire、surefire-reports(测试报告)、test-classes(测试的字节码文件) |
+| mvn package | 完成打包操作,执行完毕后，会在target目录中生成一个文件，该文件可能是jar、war |
+| mvn install | 执行mvn install命令，完成将打好的jar包安装到本地仓库的操作，执行完毕后<br>会在本地仓库中出现安装后的jar包，方便其他工程引用 |
+
+## Servlet
+
+Servlet（Server Applet）是Java Servlet的简称，称为小服务程序或服务连接器，是Java语言编写的服务器端程序，换句话说，Servlet就是运行在服务器上的Java类。
+
+Servlet用来完成B/S架构下客户端请求的响应处理，也就是交互式地浏览和生成数据，生成动态Web内容。
+
+### Servlet的编程步骤
+
+- 建立一个Java Web Application项目并配置Tomcat服务器。
+- 自定义类实现Servlet接口或继承 HttpServlet类（推荐） 并重写service方法。
+- 将自定义类的信息配置到 web.xml文件并启动项目，配置方式如下
+
+```java
+//@WebServlet("/hello1") web.xml中不配置 使用注解
+public class HelloServlet  implements Servlet {
+        @Override
+        public void init(ServletConfig servletConfig) throws ServletException {
+
+        }
+
+        @Override
+        public ServletConfig getServletConfig() {
+        	return null;
+        }
+
+        @Override
+        public void service(ServletRequest servletRequest,ServletResponse servletResponse) throws ServletException, IOException {
+        	System.out.println("接收到了浏览器的请求并做出了响应！");
+        }
+
+        @Override
+        public String getServletInfo() {
+        	return null;
+        }
+
+        @Override
+        public void destroy() {
+
+        }
+}
+```
+
+> src.main.webapp.WEB-INF 下的 web.xml 中添加
+
+```java
+<!-- 配置Servlet -->
+<servlet>
+    <!-- HelloServlet是Servlet类的别名 -->
+    <servlet-name>HelloServlet</servlet-name>
+    <!-- com.aaa.test1.HelloServlet是包含路径的真实的Servlet类名 -->
+    <servlet-class>com.aaa.test1.HelloServlet</servlet-class>
+</servlet>
+<!-- 映射Servlet -->
+<servlet-mapping>
+    <!-- HelloServlet是Servlet类的别名，与上述名称必须相同 -->
+    <servlet-name>HelloServlet</servlet-name>
+    <!-- /hello是供浏览器使用的地址 -->
+    <url-pattern>/hello</url-pattern>
+</servlet-mapping>
+```
+
+在浏览器上访问的方式为：http://localhost:8080/工程路径/url-pattern的内容
+
+###  Servlet接口
+
+基本概念
+
+- javax.servlet.Servlet接口用于定义所有servlet必须实现的方法。
+
+常用的方法
+
+方法介绍
+
+**void init(ServletConfig config)**	由servlet容器调用，以向servlet指示servlet正在被放入服务中
+
+**void service(ServletRequest req,ServletResponse res)**	由servlet容器调用，以允许servlet响应请求
+
+**ServletConfig getServletConfig()**	返回ServletConfig对象，该对象包含此servlet的初始化和启动参数
+
+**String getServletInfo()**	返回有关servlet的信息，如作者、版本和版权
+
+**void destroy()**	由servlet容器调用，以向servlet指示该servlet正在退出服务
+
+### Servlet的生命周期
+
+- 构造方法只被调用一次，当第一次请求Servlet时调用构造方法来创建Servlet的实例。 
+
+- init方法只被调用一次，当创建好Servlet实例后立即调用该方法实现Servlet的初始化。  
+
+- service方法被多次调用，每当有请求时都会调用service方法来用于请求的响应。 
+
+- destroy方法只被调用一次，当该Servlet实例所在的Web应用被卸载前调用该方法来释放当前占用的资源。
+
+### GenericServlet类
+
+基本概念
+
+- javax.servlet.GenericServlet类主要用于定义一个通用的、与协议无关的servlet，该类实现了Servlet接口。
+
+- 若编写通用servlet，只需重写service抽象方法即可。
+
+**常用的方法**
+
+| 方法声明                                                     | 功能介绍                             |
+| ------------------------------------------------------------ | ------------------------------------ |
+| abstract void service(ServletRequest req,ServletResponse res) | 由servlet容器调用允许servlet响应请求 |
+
+### HttpServlet类
+
+基本概念
+
+- javax.servlet.http.HttpServlet类是个抽象类并继承了GenericServlet类。
+
+- 用于创建适用于网站的HTTP Servlet，该类的子类必须至少重写一个方法。
+
+**常用的方法**
+
+**void doGet(HttpServletRequest req,HttpServletResponse resp)**	处理客户端的GET请求
+
+**void doPost(HttpServletRequest req,HttpServletResponse resp)**	处理客户端的POST请求
+
+**void init()**	进行初始化操作
+
+**void service(HttpServletRequest req,HttpServletResponse resp)** 根据请求决定调用doGet还是doPost方法
+
+**void destroy()**	删除实例时释放资源
+
+**GET请求**
+
+发出GET请求的主要方式： 
+
+​	（1）在浏览器输入URL按回车 
+
+​	（2）点击<a>超链接 
+
+​	（3）点击submit按钮，提交 <form method="get">表单 GET请求特点： 
+
+​		会将请求数据添加到请求URL地址的后面，只能提交少量的数据、不安全
+
+**POST请求**
+
+发出POST请求的方法如下： 
+
+​	点击submit按钮，提交 <form method="post">表单 
+
+POST请求的特点： 
+
+​	请求数据添加到HTTP协议体中，可提交大量数据、安全性好
+
+> 实现Servlet接口，这里我们直接继承HttpServlet
+
+```java
+@WebServlet("/thind")
+public class ThindServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Post");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Get");
+    }
+}
+```
+
+> 编写Servlet的映射(有Servlet依赖则不用)
+
+```xml
+    <!--注册Servlet-->
+    <servlet>
+        <servlet-name>hello</servlet-name>
+        <servlet-class>com.kuang.servlet.HelloServlet</servlet-class>
+    </servlet>
+    <!--Servlet的请求路径-->
+    <servlet-mapping>
+        <servlet-name>hello</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+```
+
+> 映射问题
+
+1. 一个Servlet可以指定一个映射路径
+
+   ```xml
+       <servlet-mapping>
+           <servlet-name>hello</servlet-name>
+           <url-pattern>/hello</url-pattern>
+       </servlet-mapping>
+   ```
+
+2. 一个Servlet可以指定多个映射路径
+
+   ```xml
+       <servlet-mapping>
+           <servlet-name>hello</servlet-name>
+           <url-pattern>/hello</url-pattern>
+       </servlet-mapping>
+       <servlet-mapping>
+           <servlet-name>hello</servlet-name>
+           <url-pattern>/hello2</url-pattern>
+       </servlet-mapping>
+       <servlet-mapping>
+           <servlet-name>hello</servlet-name>
+           <url-pattern>/hello3</url-pattern>
+       </servlet-mapping>
+       <servlet-mapping>
+           <servlet-name>hello</servlet-name>
+           <url-pattern>/hello4</url-pattern>
+       </servlet-mapping>
+       <servlet-mapping>
+           <servlet-name>hello</servlet-name>
+           <url-pattern>/hello5</url-pattern>
+       </servlet-mapping>
+   ```
+
+3. 一个Servlet可以指定通用映射路径
+
+   ```xml
+       <servlet-mapping>
+           <servlet-name>hello</servlet-name>
+           <url-pattern>/hello/*</url-pattern>
+       </servlet-mapping>
+   ```
+
+4. 默认请求路径
+
+   ```xml
+       <!--默认请求路径-->
+       <servlet-mapping>
+           <servlet-name>hello</servlet-name>
+           <url-pattern>/*</url-pattern>
+       </servlet-mapping>
+   ```
+
+5. 指定一些后缀或者前缀等等….
+
+   ```xml
+   <!--可以自定义后缀实现请求映射
+       注意点，*前面不能加项目映射的路径
+       hello/sajdlkajda.qinjiang
+       -->
+   <servlet-mapping>
+       <servlet-name>hello</servlet-name>
+       <url-pattern>*.qinjiang</url-pattern>
+   </servlet-mapping>
+   ```
+
+6. 优先级问题
+   指定了固有的映射路径优先级最高，如果找不到就会走默认的处理请求；
+
+   ```xml
+   <!--404-->
+   <servlet>
+       <servlet-name>error</servlet-name>
+       <servlet-class>com.kuang.servlet.ErrorServlet</servlet-class>
+   </servlet>
+   <servlet-mapping>
+       <servlet-name>error</servlet-name>
+       <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+   ```
+
+### ServletRequest接口
+
+基本概念 
+
+- javax.servlet.ServletRequest接口主要用于向servlet提供客户端请求信息，可以从中获取到任何 请求信息。 
+
+- Servlet容器创建一个ServletRequest对象，并将其作为参数传递给Servlet的service方法。
+
+**常用的方法**
+
+**String getParameter(String name)**	以字符串形式返回请求参数的值，如果该参数不存在，则返回空值
+
+**String[] getParameterValues(String name)**	返回一个字符串对象数组，其中包含给定请求参数所具有的所有值，如果该参数不存在，则返回空值
+
+**Map<String, String[]> getParameterMap()**	返回请求参数的键值对，一个键可以对应多个值
+
+**String getRemoteAddr()**	返回发送请求的客户端或最后一个代理的IP地址
+
+**int getRemotePort()**	返回发送请求的客户端或最后一个代理的端口号
+
+```html
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>请求参数的获取和测试</title>
+</head>
+<body>
+    <form action="parameter" method="post">
+      姓名：<input type="text" name="name"/><br/>
+      年龄：<input type="text" name="age"/><br/>
+      爱好：<input type="checkbox" name="hobby" value="Java"/>Java
+      <input type="checkbox" name="hobby" value="C"/>C
+      <input type="checkbox" name="hobby" value="C++"/>C++<br/>
+      <input type="submit" value="提交"/>
+    </form>
+</body>
+</html>
+```
+
+```java
+@WebServlet("/parameter")
+public class ParameterServlet extends HelloServlet{
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, UnsupportedEncodingException {
+        // 6.设置请求信息中的编码方式为utf-8来解决乱码问题
+        request.setCharacterEncoding("utf-8");
+        // 1.获取指定参数名称对应的参数值并打印
+        String name = request.getParameter("name");
+        System.out.println("获取到的姓名为：" + name);
+        String[] hobbies = request.getParameterValues("hobby");
+        System.out.print("获取到的爱好有：");
+        for (String ts : hobbies) {
+            System.out.print(ts + " ");
+        }
+        System.out.println();
+        System.out.println("----------------------------");
+
+        // 2.获取请求参数名和对应值的第二种方式
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        // 使用Map集合中所有的键值对组成Set集合
+        Set<Map.Entry<String, String[]>> entries = parameterMap.entrySet();
+        // 遍历Set集合
+        for (Map.Entry<String, String[]> me : entries) {
+            System.out.print(me.getKey() + "对应的数值有：");
+            for (String ts : me.getValue()) {
+                System.out.print(ts + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("----------------------");
+        // 4.获取客户端请求的其它信息
+        System.out.println("发送请求的客户端IP地址为：" + request.getRemoteAddr());
+        System.out.println("发送请求的客户端端口号为：" + request.getRemotePort());
+    }
+}
+```
