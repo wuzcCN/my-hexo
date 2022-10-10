@@ -1370,6 +1370,87 @@ Cookie技术不适合存储所有数据，程序员只用于存储少量、非�
 - 一个Seesion独占一个浏览器，只要浏览器没有关闭，这个Session就存在；
 - 用户登录之后，整个网站它都可以访问！--> 保存用户的信息；保存购物车的信息…..
 
+### Session的方法
+
+使用javax.servlet.http.HttpServletRequest接口的成员方法实现Session的获取。
+
+| 方法声明                 | 功能介绍                                            |
+| ------------------------ | --------------------------------------------------- |
+| HttpSession getSession() | 返回此请求关联的当前Session，若此请求没有则创建一个 |
+
+使用javax.servlet.http.HttpSession接口的成员方法实现判断和获取
+
+| 方法声明        | 功能介绍                  |
+| --------------- | ------------------------- |
+| boolean isNew() | 判断是否为新创建的Session |
+| String getId()  | 获取Session的编号         |
+
+```java
+@WebServlet(name = "SessionServlet", urlPatterns = "/session")
+public class SessionServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 1.调用getSession方法获取或者创建Session对象
+        HttpSession session = request.getSession();
+        // 2.判断该Session对象是否为新建的对象
+        System.out.println(session.isNew()? "新创建的Session对象": "已有的Session对象");
+        // 3.获取编号并打印
+        String id = session.getId();
+        System.out.println("获取到的Session编号为：" + id);
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	this.doPost(request, response);
+    }
+}
+```
+
+> 使用javax.servlet.http.HttpSession接口的成员方法实现属性的管理。
+
+| 方法声明                                     | 功能介绍                                                     |
+| -------------------------------------------- | ------------------------------------------------------------ |
+| Object getAttribute(String name)             | 返回在此会话中用指定名称绑定的对象，如果没有对象在该名称下绑定，则返回空值 |
+| void setAttribute(String name, Object value) | 使用指定的名称将对象绑定到此会话                             |
+| void removeAttribute(String name)            | 从此会话中删除与指定名称绑定的对象                           |
+
+```java
+@WebServlet(name = "SessionServlet2", urlPatterns = "/session2")
+public class SessionServlet2 extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        // 1.设置属性名和属性值
+        session.setAttribute("name", "machao");
+        // 2.获取指定属性名对应的属性值
+        System.out.println("获取到的属性值为：" + session.getAttribute("name")); // machao
+        // 3.删除指定的属性名
+        session.removeAttribute("name");
+        // 4.获取指定属性名对应的属性值
+        System.out.println("获取到的属性值为：" + session.getAttribute("name")); // null
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	this.doPost(request, response);
+    }
+}
+```
+
+> 可以配置web.xml文件修改失效时间。
+
+```xml
+<session-config>
+        <session-timeout>30</session-timeout>
+</session-config>
+```
+
+### Session的特点
+
+- 数据比较安全。
+
+- 能够保存的数据类型丰富，而Cookie只能保存字符串。
+
+- 能够保存更多的数据，而Cookie大约保存4KB。
+
+- 数据保存在服务器端会占用服务器的内存空间，如果存储信息过多、用户量过大，会严重影响服务器的性能。
+
 ### Session和cookie的区别
 
 - Cookie是把用户的数据写给用户的浏览器，浏览器保存 （可以保存多个）
@@ -1381,6 +1462,3 @@ Cookie技术不适合存储所有数据，程序员只用于存储少量、非�
 - 保存一个登录用户的信息；
 - 购物车信息；
 - 在整个网站中经常会使用的数据，我们将它保存在Session中；
-
-
-
