@@ -1444,12 +1444,15 @@ public class SessionServlet2 extends HttpServlet {
 ### Session的特点
 
 - 数据比较安全。
-
 - 能够保存的数据类型丰富，而Cookie只能保存字符串。
-
 - 能够保存更多的数据，而Cookie大约保存4KB。
-
 - 数据保存在服务器端会占用服务器的内存空间，如果存储信息过多、用户量过大，会严重影响服务器的性能。
+
+使用场景：
+
+- 保存一个登录用户的信息；
+- 购物车信息；
+- 在整个网站中经常会使用的数据，我们将它保存在Session中；
 
 ### Session和cookie的区别
 
@@ -1457,8 +1460,627 @@ public class SessionServlet2 extends HttpServlet {
 - Session把用户的数据写到用户独占Session中，服务器端保存 （保存重要的信息，减少服务器资源的浪费）
 - Session对象由服务创建；
 
-使用场景：
+## JSP
 
-- 保存一个登录用户的信息；
-- 购物车信息；
-- 在整个网站中经常会使用的数据，我们将它保存在Session中；
+### 什么是JSP
+
+Java Server Pages ： Java服务器端页面，也和Servlet一样，用于动态Web技术！
+
+JSP是Java Server Pages的简称，跟Servlet一样可以动态生成HTML响应， JSP文件命名为xxx.jsp。
+
+与Servlet不同，JSP文件以HTML标记为主，然后内嵌Java代码段，用于处理动态内容。
+
+最大的特点：
+
+- 写JSP就像在写HTML
+- 区别：
+  - HTML只给用户提供静态的数据
+  - JSP页面中可以嵌入JAVA代码，为用户提供动态数据；
+
+**浏览器向服务器发送请求，不管访问什么资源，其实都是在访问Servlet！**
+
+JSP最终也会被转换成为一个Java类！**JSP 本质上就是一个Servlet！**
+
+```jsp
+<%@ page import="java.util.Date" %> 
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %> 
+
+<html> 
+<head> 
+	<title>Hello Time</title>
+</head> 
+<body> 
+现在的时间是：<%= new Date()%> 
+</body> 
+</html>
+```
+
+只要是 JAVA代码就会原封不动的输出；
+
+如果是HTML代码，就会被转换为：
+
+```java
+out.write("<html>\r\n");
+```
+
+这样的格式，输出到前端！
+
+### JSP语法
+
+**<%! 程序代码区 %>||<% %>**
+
+```jsp
+<%!
+    int i; 
+	public void setName(){}
+%>
+
+<%
+    int sum = 0;
+	for (int i = 1; i <=100 ; i++) {
+      sum+=i;
+    }
+	out.println("<h1>Sum="+sum+"</h1>");
+%>
+```
+
+程序代码区：可以定义局部变量以及放入任何的Java程序代码。
+
+**<%= %>**
+
+```jsp
+<%="hello world"%> 
+```
+
+注意：不需要以;结束，只有一行
+
+可以输出一个变量或一个具体内容，但=后面必须是字符串变量或者可以被转换成字符串的表达式。	
+
+**注释**
+
+```jsp
+<!--… …-->HTML文件的注释，浏览器可以查看到
+<%--… …--%>JSP文件的注释，浏览器看不到
+<%//… …%>Java语言中的单行注释，浏览器看不到
+<%/*… …*/%>Java语言中的多行注释，浏览器看不到 注释的内容不会被执行
+```
+
+**JSP指令**
+
+**page**指令用于导包和设置一些页面属性，常用属性如下：
+
+import		          导入相应的包，惟一允许在同一文档中多次出现的属性
+
+contentType		设置Content-Type响应报头，标明即将发送到浏览器的文档类型
+
+pageEncoding	 设置页面的编码
+
+language 		     指定页面使用的语言 
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8" %>
+
+<%@include file=""%>
+<%--@include会将两个页面合二为一--%>
+
+<%@include file="common/header.jsp"%>
+<h1>网页主体</h1>
+
+<%@include file="common/footer.jsp"%>
+
+<hr>
+
+<%--jSP标签 jsp:include：拼接页面，本质还是三个 --%>
+<jsp:include page="/common/header.jsp"/>
+<h1>网页主体</h1>
+<jsp:include page="/common/footer.jsp"/>
+```
+
+### 内置对象
+
+在JSP程序中有9个内置对象由容器为用户进行实例化，程序员可以不用定义就直接使用这些变量。
+
+在JSP转换成Servlet后，会自动追加这些变量的定义，使用内置对象可以简化JSP的开发。
+
+| 对象变量    | 对象类型            | 作用             |
+| ----------- | ------------------- | ---------------- |
+| out         | JSPWriter           | 输出流           |
+| request     | HttpServletRequest  | 请求信息         |
+| response    | HttpServletResponse | 响应信息         |
+| session     | HttpSession         | 会话             |
+| application | ServletContext      | 全局的上下文对象 |
+| pageContext | PageContext         | JSP页面上下文    |
+| page        | Object              | JSP页面本身      |
+| config      | ServletConfig       | Servlet配管对象  |
+| exception   | Throwable           | 捕获网页异常     |
+
+request：客户端向服务器发送请求，产生的数据，用户看完就没用了，比如：新闻，用户看完没用的！
+
+session：客户端向服务器发送请求，产生的数据，用户用完一会还有用，比如：购物车；
+
+application：客户端向服务器发送请求，产生的数据，一个用户用完了，其他用户还可能使用，比如：聊天数据；
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>session内置对象的使用</title>
+</head>
+    <body>
+        <% session.setAttribute("name","hd");%>
+        <% session.getAttribute("name");%>
+        ${name}
+    </body>
+</html>
+```
+
+### EL表达式
+
+EL（Expression Language）表达式提供了在JSP中简化表达式的方法，可以方便地访问各种数据并输出。
+
+EL表达式： ${ }获取数据、执行运算、获取web开发的常用对象
+
+**JSP标签**
+
+> 依次访问pageContext、request、session和application作用域对象存储的数据。
+
+```jsp
+<%=request.getAttribute(“ varName”)%>
+用EL实现: ${varName}
+```
+
+### **JSTL表达式**
+
+JSTL( JSP Standard Tag Library ) 被称为JSP标准标签库。
+
+开发人员可以利用这些标签取代JSP页面上的Java代码，从而提高程序的可读性，降低程序的维护难度。
+
+JSTL标签库的使用就是为了弥补HTML标签的不足；它自定义许多标签，可以供我们使用，标签的功能和Java代码一样！
+
+**JSTL标签库使用步骤**
+
+- 引入对应的 taglib
+- 使用其中的方法
+- **在Tomcat 也需要引入 jstl的包，否则会报错：JSTL解析错误**
+
+pom.xml
+
+```xml
+<dependency>
+    <groupId>jstl</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+<dependency>
+    <groupId>apache-taglibs</groupId>
+    <artifactId>standard</artifactId>
+    <version>1.1.2</version>
+</dependency>
+```
+
+在JSP页面中使用taglib指定引入jstl标签库
+
+```jsp
+<!-- prefix属性用于指定库前缀 --> 
+<!-- uri属性用于指定库的标识 --> 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+```
+
+> 输出标签
+
+```jsp
+<c:out></c:out> 用来将指定内容输出的标签
+```
+
+> 设置标签
+
+```jsp
+<c:set></c:set> 用来设置属性范围值的标签
+```
+
+> 删除标签
+
+```jsp
+<c:remove></c:remove> 用来删除指定数据的标签
+```
+
+> 单条件判断标签
+
+```jsp
+<c:if test =“EL条件表达式”> 
+
+满足条件执行 
+
+</c:if >
+
+<head>
+    <title>Title</title>
+</head>
+<body>
+
+
+<h4>if测试</h4>
+
+<hr>
+
+<form action="coreif.jsp" method="get">
+    <%--
+    EL表达式获取表单中的数据
+    ${param.参数名}
+    --%>
+    <input type="text" name="username" value="${param.username}">
+    <input type="submit" value="登录">
+</form>
+
+<%--判断如果提交的用户名是管理员，则登录成功--%>
+<c:if test="${param.username=='admin'}" var="isAdmin">
+    <c:out value="管理员欢迎您！"></c:out>
+</c:if>
+
+<%--自闭合标签--%>
+<c:out value="${isAdmin}"/>
+
+</body>
+```
+
+> 多条件判断标签
+
+```jsp
+<c:choose > 
+
+	<c:when test =“EL表达式”> 
+
+		满足条件执行 
+
+	</c:when> 
+
+	…
+
+	<c:otherwise>
+
+		不满足上述when条件时执行 
+
+	</c:otherwise>
+
+</c:choose >
+
+<body>
+
+<%--定义一个变量score，值为85--%>
+<c:set var="score" value="55"/>
+
+<c:choose>
+    <c:when test="${score>=90}">
+        你的成绩为优秀
+    </c:when>
+    <c:when test="${score>=80}">
+        你的成绩为一般
+    </c:when>
+    <c:when test="${score>=70}">
+        你的成绩为良好
+    </c:when>
+    <c:when test="${score>=60}">
+        你的成绩为次
+    </c:when>
+    <c:otherwise>
+		<c:out value="成绩不及格"></c:out><br>
+	</c:otherwise>
+</c:choose>
+
+</body>
+```
+
+> 循环标签
+
+```jsp
+<c:forEach var=“循环变量” items=“集合”> 
+
+	… 
+
+</c:forEach>
+
+<%
+
+    ArrayList<String> people = new ArrayList<>();
+    people.add(0,"张三");
+    people.add(1,"李四");
+    people.add(2,"王五");
+    people.add(3,"赵六");
+    people.add(4,"田六");
+    request.setAttribute("list",people);
+%>
+
+
+<%--
+var , 每一次遍历出来的变量
+items, 要遍历的对象
+begin,   哪里开始
+end,     到哪里
+step,   步长
+--%>
+<c:forEach var="people" items="${list}">
+    <c:out value="${people}"/><br>
+</c:forEach>
+
+<hr>
+<%-- 指定起始和结尾位置 从下标1开始到3结束，包含1和3 跳跃性遍历 间隔为1--%>
+<c:forEach var="people" items="${list}" begin="1" end="3" step="1" >
+    <c:out value="${people}"/><br>
+</c:forEach>
+```
+
+> 实现循环标签的使用
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+  <title>实现循环标签的使用</title>
+</head>
+<body>
+<%
+  // 准备一个数组并初始化
+  String[] sArr = {"11", "22", "33", "44", "55"};
+  pageContext.setAttribute("sArr", sArr);
+%>
+
+<%-- 使用循环标签遍历数组中的所有元素 --%>
+<c:forEach var="ts" items="${sArr}">
+  <c:out value="${ts}"></c:out>
+</c:forEach>
+<hr/>
+
+<%-- 跳跃性遍历 间隔为2  也就是跳过一个遍历一个 --%>
+<c:forEach var="ts" items="${sArr}" step="2">
+  <c:out value="${ts}"></c:out>
+</c:forEach>
+<hr/>
+
+<%-- 指定起始和结尾位置 从下标1开始到3结束，包含1和3--%>
+<c:forEach var="ts" items="${sArr}" begin="1" end="3">
+  <c:out value="${ts}"></c:out>
+</c:forEach>
+
+</body>
+</html>
+```
+
+> 实现choose标签的使用
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+  <title>实现choose标签的使用</title>
+</head>
+<body>
+<%-- 设置一个变量代表考试的成绩并指定数值 --%>
+<c:set var="score" value="59" scope="page"></c:set>
+<c:out value="${score}"></c:out>
+<hr/>
+<%-- 进行多条件判断和处理 --%>
+<c:choose>
+  <c:when test="${score > 60}">
+    <c:out value="成绩不错，继续加油哦！"></c:out>
+  </c:when>
+  <c:when test="${score == 60}">
+    <c:out value="60分万岁，多一份浪费！"></c:out>
+  </c:when>
+  <c:otherwise>
+    <c:out value="革命尚未成功，同志仍需努力！"></c:out>
+  </c:otherwise>
+</c:choose>
+</body>
+</html>
+```
+
+> 实现if标签的使用
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+  <title>实现if标签的使用</title>
+</head>
+<body>
+<%-- 设置一个变量以及对应的数值 --%>
+<c:set var="age" value="17" scope="page"></c:set>
+<c:out value="${age}"></c:out>
+<hr/>
+
+<%-- 判断该年龄是否成年，若成年则提示已经成年了 --%>
+<c:if test="${age >= 18}">
+  <c:out value="已经成年了！"></c:out>
+</c:if>
+
+</body>
+</html>
+```
+
+## Filter过滤器
+
+**基本概念**
+
+- Filter本意为”过滤“的含义，是JavaWeb的三大组件之一，三大组件为： Servlet、 Filter、 Listener。
+
+- 过滤器是向 Web 应用程序的请求和响应处理添加功能的 Web 服务组件。
+
+- 过滤器相当于浏览器与Web资源之间的一道过滤网，在访问资源之前通过一系列的过滤器对请求 进行修改、判断以及拦截等，也可以对响应进行修改、判断以及拦截等。
+
+### 使用方式
+
+自定义类实现Filter接口，重写对应的方法即可
+
+```java
+public class CharacterEncodingFilter implements Filter {
+
+    //初始化：web服务器启动，就以及初始化了，随时等待过滤对象出现！
+    public void init(FilterConfig filterConfig) throws ServletException {
+        System.out.println("CharacterEncodingFilter初始化");
+    }
+
+    //Chain : 链
+    /*
+    1. 过滤中的所有代码，在过滤特定请求的时候都会执行
+    2. 必须要让过滤器继续同行
+        chain.doFilter(request,response);
+     */
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        request.setCharacterEncoding("utf-8");
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        System.out.println("CharacterEncodingFilter执行前....");
+        chain.doFilter(request,response); //让我们的请求继续走，如果不写，程序到这里就被拦截停止！
+        System.out.println("CharacterEncodingFilter执行后....");
+    }
+
+    //销毁：web服务器关闭的时候，过滤会销毁
+    public void destroy() {
+        System.out.println("CharacterEncodingFilter销毁");
+    }
+}
+```
+
+在web.xml中配置 Filter
+
+```xml
+<filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>com.aaa.filter.CharacterEncodingFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <!--只要是 /servlet的任何请求，会经过这个过滤器-->
+    <url-pattern>/servlet</url-pattern>
+    <!--<url-pattern>/*</url-pattern>-->
+</filter-mapping>
+```
+
+### 登录案例
+
+在web.xml文件中配置过滤器
+
+```xml
+	<filter>
+        <filter-name>LoginFilter</filter-name>
+        <filter-class>com.aobayu.demo.aaa.LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <!--只要是 /servlet的任何请求，会经过这个过滤器-->
+        <url-pattern>/*</url-pattern>
+        <!--<url-pattern>/*</url-pattern>-->
+    </filter-mapping>
+```
+
+login.jsp
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>登录页面</title>
+</head>
+<body>
+
+  <form action="login" method="post">
+  用户名: <input type="text" name="userName"/><br/>
+  密&nbsp;&nbsp;&nbsp;&nbsp;码:<input type="password" name="password"/><br/>
+  <input type="submit" value="登录"/>
+  </form>
+
+</body>
+</html>
+```
+
+main.jsp
+
+```jsp
+<%@ page import="java.util.Date" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8" %>
+<html>
+<head>
+  <title>主页面</title>
+</head>
+<body>
+现在的时间是：<%= new Date()%>
+
+<h1>登录成功，欢迎${sessionScope.userName}使用！</h1>
+
+</body>
+</html>
+```
+
+点击登录到 LoginServlet
+
+```java
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // 1.接收前端页面输入的用户名和密码信息并打印
+        String userName = req.getParameter("userName");
+        System.out.println("接收到的用户名为：" + userName);
+        String password = req.getParameter("password");
+        System.out.println("接收到的密码为：" + password);
+        // 2.使用固定的用户名和密码信息来进行登录的校验
+        if ("admin".equals(userName) && "123456".equals(password)) {
+            System.out.println("登录成功，欢迎使用！");
+            // 存储用户名信息
+            req.getSession().setAttribute("userName", userName);
+            //跳转到 main.jsp
+            resp.sendRedirect("main.jsp");
+        } else {
+            System.out.println("用户名或密码错误，请重新输入！");
+            req.getRequestDispatcher("login.jsp").forward(req, resp);
+        }
+    }
+}
+```
+
+登录失败拦截 LoginFilter
+
+```java
+@WebFilter("/main.jsp")
+public class LoginFilter implements Filter {
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        System.out.println("Filter初始化");
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        // 1.实现对用户访问主页面的过滤操作，也就是只有用户登录后才能访问主页面，否则一律拦截
+        //判断session中是否已有用户名信息，若没有则进行拦截，否则放行
+        HttpServletRequest httpServletRequest = (HttpServletRequest)servletRequest;
+        HttpSession session = httpServletRequest.getSession();
+        Object userName = session.getAttribute("userName");
+        // 获取Servlet的请求路径
+        String servletPath = httpServletRequest.getServletPath();
+        // 若没有登录，则回到登录页面
+        if (null == userName && !servletPath.contains("login")) {
+            servletRequest.getRequestDispatcher("login.jsp").forward(servletRequest, servletResponse);
+        } else {
+            // 若已经登录，则放行
+            filterChain.doFilter(servletRequest, servletResponse);
+        }
+
+    }
+
+    @Override
+    public void destroy() {
+        System.out.println("Filter销毁");
+    }
+```
+
