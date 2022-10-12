@@ -1626,7 +1626,7 @@ EL表达式： ${ }获取数据、执行运算、获取web开发的常用对象
 > 依次访问pageContext、request、session和application作用域对象存储的数据。
 
 ```jsp
-<%=request.getAttribute(“ varName”)%>
+<%=request.getAttribute("varName")%>
 用EL实现: ${varName}
 ```
 
@@ -1688,7 +1688,7 @@ pom.xml
 > 单条件判断标签
 
 ```jsp
-<c:if test =“EL条件表达式”> 
+<c:if test ="EL条件表达式"> 
 
 满足条件执行 
 
@@ -1729,7 +1729,7 @@ pom.xml
 ```jsp
 <c:choose > 
 
-	<c:when test =“EL表达式”> 
+	<c:when test ="EL表达式"> 
 
 		满足条件执行 
 
@@ -1774,7 +1774,7 @@ pom.xml
 > 循环标签
 
 ```jsp
-<c:forEach var=“循环变量” items=“集合”> 
+<c:forEach var="循环变量" items="集合"> 
 
 	… 
 
@@ -1972,7 +1972,7 @@ public class CharacterEncodingFilter implements Filter {
     </filter>
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
-        <!--只要是 /servlet的任何请求，会经过这个过滤器-->
+        <!--只要是任何请求，会经过这个过滤器-->
         <url-pattern>/*</url-pattern>
         <!--<url-pattern>/*</url-pattern>-->
     </filter-mapping>
