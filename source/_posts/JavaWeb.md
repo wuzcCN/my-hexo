@@ -15,7 +15,7 @@ description: Java Web，是用Java技术来解决相关web互联网领域的技�
 
 web开发：
 
-- web，网页的意思 ， www.baidu.com
+- web，网页的意思，www.baidu.com
 - 静态web
   - html，css
   - 提供给所有人看的数据始终不会发生变化！
@@ -2084,3 +2084,725 @@ public class LoginFilter implements Filter {
     }
 ```
 
+## Listener监听器
+
+**概述**
+
+监听你的web应用，监听许多信息的初始化，销毁，增加，修改，删除值等
+
+`Servlet`监听器用于监听一些重要事件的发生，监听器对象可以在事情发生前、发生后可以做一些必要的处理 
+
+**监听器的分类：**
+
+在一个web应用程序的整个运行周期内，web容器会创建和销毁三个重要的对象，`ServletContext`,`HttpSession`,`ServletRequest`
+
+ 按监听的对象划分，可以分为
+
+- ServletContext 
+
+- HttpSession 
+
+- ServletRequest  
+
+​    按监听的事件划分
+
+- 对象自身的创建和销毁的监听器
+
+- 对象中属性的创建和消除的监听器
+
+- session中的某个对象的状态变化的监听器
+
+### 创建监听器
+
+> ServletContext 监听
+
+`ServletContext` 代表整个web应用，在服务器启动的时候，tomcat会自动创建该对象。在服务器关闭时会自动销毁该对象
+
+```java
+@WebListener
+public class MyContextListener implements ServletContextListener {
+        @Override
+        public void contextInitialized(ServletContextEvent servletContextEvent) {
+        //        获取到上下文对象
+        ServletContext application = servletContextEvent.getServletContext();
+        System.out.println("上下文初始化"+application);
+        }
+    
+        @Override
+        public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        System.out.println("上下文销毁");
+        }
+}
+```
+
+或在xml中配置
+
+```xml
+<listener>
+
+	<listener-class>监听器的全路径</listener-class>
+
+</listener>
+```
+
+> session监听
+
+```java
+@WebListener
+public class MySessionListener implements HttpSessionListener {
+    /**
+    *
+    * @param httpSessionEvent 事件参数，可以获取到被监听对象的数据信息
+    */
+    @Override
+    public void sessionCreated(HttpSessionEvent httpSessionEvent) {
+    	System.out.println("session创建"+httpSessionEvent.getSession().getId());
+    }
+
+    @Override
+    public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
+    	System.out.println("session销毁"+httpSessionEvent.getSession());
+    }
+}
+```
+
+> session中属性监听
+
+```java
+@WebListener
+public class MySessionAttributeListener implements HttpSessionAttributeListener {
+    @Override
+    public void attributeAdded(HttpSessionBindingEvent httpSessionBindingEvent) {
+    System.out.println("session属性添加："+httpSessionBindingEvent.getName());
+    }
+
+    @Override
+    public void attributeRemoved(HttpSessionBindingEvent httpSessionBindingEvent) {
+    System.out.println("session属性移除："+httpSessionBindingEvent.getName());
+    }
+
+    @Override
+    public void attributeReplaced(HttpSessionBindingEvent httpSessionBindingEvent) {
+    System.out.println("session属性替换："+httpSessionBindingEvent.getName());
+    }
+}
+```
+
+在线人数统计：
+
+1、先获取容器中的数量计数器，如果没有，创建存进去
+
+2、每创建一个session，计数器加1
+
+3、每销毁一个session,计数器减1
+
+```java
+@WebListener
+public class OnlineListener implements ServletContextListener, HttpSessionListener {
+    ServletContext appliction;
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+        /* 当容器创建就获取上下文对象*/
+        appliction = servletContextEvent.getServletContext();
+        /* 是否有计数器 */
+        if(appliction.getAttribute("count")==null){
+            /* 存进去，只执行一次 */
+            appliction.setAttribute("count",0);
+        }
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+    }
+
+    @Override
+    public void sessionCreated(HttpSessionEvent httpSessionEvent) {
+        /* 获取原来的计数器的值 */
+        Integer count=Integer.valueOf(appliction.getAttribute("count").toString());
+        count++;
+        /* 存进去 */
+        appliction.setAttribute("count",count);
+    }
+
+    @Override
+    public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
+    	Integer count=Integer.valueOf(appliction.getAttribute("count").toString());
+        count--;
+        appliction.setAttribute("count",count);
+    }
+}
+```
+
+## JQuery异步调用
+
+**同步和异步**
+
+同步：同步请求，客户端发出请求，等待服务器端返回结果，接着进行下一次的请求。
+
+异步：异步请求，客户端发出请求，无需等待服务器端返回结果，接着进行下一次的请求。
+
+**Ajax简介**
+
+Ajax 即“**Asynchronous Javascript And XML**”（异步 JavaScript 和 XML），是指一种创建交互式、快速动态网页应用的网页开发技术，无需重新加载整个网页的情况下，能够更新部分网页的技术。
+
+通过在后台与服务器进行少量数据交换，Ajax 可以使网页实现异步更新。这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新。
+
+原理：
+
+1、客户端发送异步请求
+
+XMLHttpRequest 对象
+
+2、服务器端接收请求，处理数据，通常返回json格式的数据，字符串（文本）
+
+3、客户端获取服务器返回的数据在页面上显示
+
+使用js ,jquery ,dom ,css
+
+### JQuery中的AJAX
+
+**简单使用**
+
+$.get
+
+```xml
+$.get(url,[data],[callback],[type])
+url:待载入页面的URL地址  @WebServlet("/xxxxxxx") get post
+data:待发送 Key/value 参数。
+callback:载入成功时回调函数。 接受 后端响应的数据
+type:返回内容格式，xml, html, script, json, text, _default。
+```
+
+> 在webapp目录下创建static文件夹,在static下创建js,css,image三个文件夹,将jQuery的文件拷贝到js文件夹中
+
+在webapp下新建 webapp/register.jsp
+
+```jsp
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSP - Hello World</title>
+    <script src="./static/js/jquery-3.6.0.js"></script>
+    <script>
+        $(function(){
+            $("#dname").on("blur",function(){
+                $.get(
+                    "/demo1/checkUsername",
+                    {username:$("#dname").val()},
+                    function(result){
+                        if(result==1){
+                            $("#usermsg").html("<span style='color:red'>用户已存在<span>");
+                        }else{
+                            $("#usermsg").html("<span style='color:red'>true<span>");
+                        }
+                    }
+                );
+            })
+        })
+    </script>
+</head>
+<body>
+
+<form action="/demo1/register" method="post" id="form">
+    userName:<input name="username" id="dname" type="text"/> <span id="usermsg"></span><br>
+    password:<input name="pass" type="password"/><br>
+    <input type="button"  id="btn" value="register">
+</form>
+
+</body>
+</html>
+```
+
+> 服务端Servlet 拿到username 查询数据库，如果可以查到，就返回1
+
+```java
+@WebServlet("/checkUsername")
+public class CheckUsernameServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String user=req.getParameter("username");
+
+        /*如果存在就返回1 否则0*/
+        if("heda".equals(user)){
+            resp.getWriter().print(1);
+        }else{
+            resp.getWriter().print(0);
+        }
+    }
+}
+```
+
+### 查询数据库
+
+**前置准备**
+
+pom.xml
+
+```xml
+//导入mysql jar包		
+<dependency> 
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.38</version>
+</dependency>
+//导入dbutils jar包		
+<dependency>
+    <groupId>commons-dbutils</groupId>
+    <artifactId>commons-dbutils</artifactId>
+    <version>1.6</version>
+</dependency>
+//导入druid jar包		
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+    <version>1.2.8</version>
+</dependency>
+```
+
+src/main/resources 编写好的druid.properties
+
+```java
+driverClassName=com.mysql.jdbc.Driver
+url=jdbc:mysql:///db5?useSSL=false&useServerPrepStmts=true&characterEncoding=utf-8
+username=root
+password=123456
+initialSize=5
+maxActive=10
+maxWait=3000
+```
+
+在java.com.example.demo1目录下创建controller，dao，pojo，utils文件夹
+
+将DruidUtils 文件拷贝到utils文件夹中
+
+```java
+public class DruidUtils {
+    public static DataSource dataSource;
+    static {
+        try {
+            Properties p = new Properties();
+            InputStream inputStream = DruidUtils.class.getClassLoader().getResourceAsStream("druid.properties");
+            p.load(inputStream);
+            dataSource = DruidDataSourceFactory.createDataSource(p);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+    public static Connection getConnection(){
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static void close(ResultSet resultSet){
+        try {
+            if (resultSet != null){
+                resultSet.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void close(Statement statement){
+        try {
+            if (statement != null){
+                statement.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void close(Connection connection){
+        try {
+            if (connection != null){
+                connection.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void close(ResultSet resultSet,Statement statement,Connection connection){
+        close(resultSet);
+        close(statement);
+        close(connection);
+    }
+
+    public  static DataSource getDataSource(){
+        return dataSource;
+    }
+}
+```
+
+**实现查询数据库**
+
+新建数据库 cell ,存入用户数据
+
+在webapp下新建 register.jsp
+
+```jsp
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSP</title>
+    <script src="./static/js/jquery-3.6.0.js"></script>
+    <script>
+        $(function(){
+            $("#dname").on("blur",function(){
+                $.get(
+                    "/demo1/checkUsername",
+                    {username:$("#dname").val()},
+                    function(result){
+                        if(result==1){
+                            $("#usermsg").html("<span style='color:red'>用户已存在<span>");
+                            console.log("用户已存在");
+                        }else{
+                            $("#usermsg").html("");
+                        }
+                    }
+                );
+            })
+        })
+    </script>
+</head>
+<body>
+
+
+<form action="/demo1/register" method="post" id="form">
+    userName:<input name="username" id="dname" type="text"/> <span id="usermsg"></span><br>
+    password:<input name="pass" type="password"/><br>
+    <input type="button"  id="btn" value="register">
+</form>
+
+</body>
+</html>
+```
+
+在pojo下新建 Cell.java
+
+```java
+public class Cell {
+    private String name;
+    private int money;
+    private String phone;
+
+    public Cell(){}
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "name='" + name + '\'' +
+                ", money=" + money +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
+
+}
+```
+
+在dao下新建 CellDao.java
+
+```java
+public interface CellDao {
+    long CellServlet(String name) throws SQLException;
+}
+```
+
+在dao下新建 impl/CellImplement.java
+
+```java
+public class CellImplement implements CellDao {
+    @Override
+    public long CellServlet(String name) throws SQLException {
+        
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select * from cell where name = ?;";
+        List<Cell> query = qr.query(sql, new BeanListHandler<>(Cell.class), name);
+
+        if (query.isEmpty()){
+            return 0;
+        }else {
+            return 1;
+        }
+    }
+}
+```
+
+在controller下新建 CheckUsernameServlet.java
+
+```java
+@WebServlet("/checkUsername")
+public class CheckUsernameServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String user=req.getParameter("username");
+        /* 通过dao层查询数据库，如果可以查到就通过如下代码返回1 否则返回0  */
+        CellDao cell = new CellImplement();
+        try {
+            long ruelt = cell.CellServlet(user);
+            /*如果存在就返回1 否则0*/
+            if (ruelt>0) {
+                resp.getWriter().print(1);
+            } else {
+                resp.getWriter().print(0);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+### 插入数据到数据库
+
+在webapp下修改 register.jsp
+
+```jsp
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSP - Hello World</title>
+    <script src="./static/js/jquery-3.6.0.js"></script>
+    <script>
+        $(function(){
+            $("#dname").on("blur",function(){
+                $.get(
+                    "/demo1/checkUsername",
+                    {username:$("#dname").val()},
+                    function(result){
+                        if(result==1){
+                            $("#usermsg").html("<span style='color:red'>用户已存在<span>");
+                            console.log("用户已存在");
+                        }else{
+                            $("#usermsg").html("");
+                        }
+                    }
+                );
+            })
+            $("#btn").click(function () {
+                $.post(
+                    "/demo1/register",
+                    //序列化，拿到所有的表单元素username password
+                    $("#form").serialize(),
+                    function (result) {
+                        if(result==1){
+                            alert("插入成功")
+                        }else{
+                            alert("插入失败")
+                        }
+                    }
+                )
+            })
+        })
+    </script>
+</head>
+<body>
+
+<form action="/demo1/register" method="post" id="form">
+    userName:<input name="username" id="dname" type="text"/> <span id="usermsg"></span><br>
+    money:<input name="money" type="text"/><br>
+    phone:<input name="phone" type="text"/><br>
+    <input type="button"  id="btn" value="register">
+</form>
+
+</body>
+</html>
+```
+
+在dao下修改 CellDao.java
+
+```java
+public interface CellDao {
+    long CellServlet(String name) throws SQLException;
+    long insertServlet(String name,int money,String phone) throws SQLException;
+}
+```
+
+在dao下修改 impl/CellImplement.java
+
+```java
+public class CellImplement implements CellDao {
+    @Override
+    public long CellServlet(String name) throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select * from cell where name = ?;";
+        List<Cell> query = qr.query(sql, new BeanListHandler<>(Cell.class), name);
+
+        if (query.isEmpty()){
+            return 0;
+        }else {
+            return 1;
+        }
+    }
+    
+    @Override
+    public long insertServlet(String name, int money, String phone) throws SQLException {
+
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "insert into cell(name,money,phone) values (?,?,?)";
+        int update = qr.update(sql, name, money, phone);
+        System.out.println(update);
+        return update;
+    }
+}
+```
+
+在dao下新建 RegisterServlet.java
+
+```java
+@WebServlet("/register")
+public class RegisterServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String name = req.getParameter("username");
+        int money = Integer.parseInt(req.getParameter("money"));
+        String phone = req.getParameter("phone");
+        CellImplement cell = new CellImplement();
+        try {
+            long score = cell.insertServlet(name, money, phone);
+            if (score>0){
+                resp.getWriter().println(1);
+            }else{
+                resp.getWriter().println(0);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+### 简单封装
+
+在java.com.example.demo1目录下创建service文件夹
+
+在service 下创建 CellService.java
+
+```java
+public class CellService {
+    public long InsertCell( String name,int money,String phone) throws SQLException {
+        Cell cell = new Cell();
+        cell.setName(name);
+        cell.setMoney(money);
+        cell.setPhone(phone);
+        long row = new CellImplement().insertServlet(cell);
+        return row;
+    }
+}
+```
+
+CellDao 更改
+
+```java
+public interface CellDao {
+    long CellServlet(String name) throws SQLException;
+    // 更改位置
+    long insertServlet(Cell cell) throws SQLException;
+}
+```
+
+CellImplement 更改
+
+```java
+public class CellImplement implements CellDao {
+    @Override
+    public long CellServlet(String name) throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select * from cell where name = ?;";
+        List<Cell> query = qr.query(sql, new BeanListHandler<>(Cell.class), name);
+
+        if (query.isEmpty()){
+            return 0;
+        }else {
+            return 1;
+        }
+    }
+	// 更改位置
+    @Override
+    public long insertServlet(Cell cell) throws SQLException {
+
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "insert into cell(name,money,phone) values (?,?,?)";
+        int update = qr.update(sql, cell.getName(), cell.getMoney(), cell.getPhone());
+        System.out.println(update);
+        return update;
+    }
+}
+```
+
+RegisterServlet.java 更改
+
+```java
+@WebServlet("/register")
+public class RegisterServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String name = req.getParameter("username");
+        int money = Integer.parseInt(req.getParameter("money"));
+        String phone = req.getParameter("phone");
+        // 更改位置
+        CellImplement cell = new CellImplement();
+        // 更改位置
+        try {
+            long score = new CellService().InsertCell(name, money, phone);
+            if (score>0){
+                resp.getWriter().println(1);
+            }else{
+                resp.getWriter().println(0);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
