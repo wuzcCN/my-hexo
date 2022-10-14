@@ -2806,3 +2806,276 @@ public class RegisterServlet extends HttpServlet {
     }
 }
 ```
+
+## JSON 
+
+JavaScript Object Notation JavaScript 对象表示法 
+
+> JSON的特点: 
+
+JSON 是一种轻量级的数据交换格式。
+
+JSON采用完全独立于语言的文本格式，就是说不同的编程语言JSON数据是一致的。 
+
+JSON易于人阅读和编写，同时也易于机器解析和生成(一般用于提升网络传输速率)。
+
+> XML与JSON的区别
+
+XML : 可扩展标记语言，是一种用于标记电子文件使其具有结构性的标记语言。 
+
+JSON: (JavaScript Object Notation, JS 对象简谱) 是一种轻量级的数据交换格式。 
+
+相同点:  它们都可以作为一种数据交换格式。 
+
+> 二者区别:
+
+XML是重量级的，JSON是轻量级的,XML在传输过程中比较占带宽，JSON占带宽少，易于压 缩。 
+
+XML和json都用在项目交互下，XML多用于做配置文件，JSON用于数据交互 
+
+JSON独立于编程语言存在,任何编程语言都可以去解析json 
+
+### JSON 基础语法
+
+JSON 本质就是一个字符串，但是该字符串内容是有一定的格式要求的。 定义格式 {" key": false }
+
+```json
+var 变量名 = '{"key":value,"key":value,...}';
+```
+
+`JSON` 串的键要求必须使用双引号括起来，而值根据要表示的类型确定
+
+> 在前端页面中 转换JSON和字符串
+
+```html
+<script>
+//1. 定义JSON字符串
+var jsonStr = '{"name":"zhangsan","age":23,"addr":["北京","郑州","西安"]}'
+let jsObject = JSON.parse(jsonStr);
+//3. 将 JS 对象转换为 JSON 字符串
+let jsonStr2 = JSON.stringify(jsObject);
+</script>
+```
+
+### JSON串和Java对象的转换
+
+前端发送请求时，如果是复杂的数据就会以 json 提交给后端；而后端如果需要响应一些复杂的数据时，也需要以 json 格式将数据响应回给浏览器
+
+> `Fastjson` 是阿里巴巴提供的一个Java语言编写的高性能功能完善的 `JSON` 库，是目前Java语言中最快的 `JSON` 库，可以实现 `Java` 对象和 `JSON` 字符串的相互转换。
+
+导入依赖 pom.xml
+
+```xml
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.62</version>
+</dependency>
+```
+
+使用 将 Java 对象转换为 JSON 串，只需要使用 `Fastjson` 提供的 `JSON` 类中的 `toJSONString()` 静态方法
+
+```java
+String jsonStr = JSON.toJSONString(obj);
+```
+
+将 json 转换为 Java 对象，只需要使用 Fastjson 提供的 JSON 类中的 parseObject() 静态方法
+
+```java
+String str = "{'name'':'zhangxuhui','age':18 }";
+Student student = JSON.parseObject(jsonStr, Student.class);
+```
+
+> lombok插件
+
+在 Idea 中下载 lombok 插件
+
+通过 @JSONField 我们可以自定义字段的名称进行输出，并控制字段的排序，还可以进行序列化 标记。 
+
+指定name属性, 字段的名称 
+
+使用 ordinal属性, 指定字段的顺序 
+
+使用 serialize属性, 指定字段不序列化
+
+```java
+//lombok 插件完成set/get方法和toString方法
+@Data
+@ToString
+public class Person {
+        //自定义输出的名称, 并且进行输出排序
+        @JSONField(name="USERNAME",ordinal = 1)
+        private String username;
+        @JSONField(name="AGE",ordinal = 2)
+        private int age;
+        //排除不需要序列化的字段
+        @JSONField(serialize = false)
+        private String birthday;
+}
+```
+
+> JSON 字符串转换为 Java 对象
+
+**JSON.parseObject()**
+
+- 可以使用 JSON.parseObject() 将 JSON 字符串转换为 Java 对象。
+
+- 注意反序列化时为对象时，必须要有默认无参的构造函数，否则会报异常
+
+**JSON.parseArray()**
+
+可以使用 JSON.parseArray() 将 JSON 字符串转换为 集合对象。
+
+```java
+public void JSONToJavaBean() {
+        String json = "{\"age\":15,\"birthday\":\"2022-10-03 19:54:33\",\"username\":\"heda\"}";
+        Person person = JSON.parseObject(json, Person.class);
+        System.out.println(person);
+        //创建Person对象
+        String json2 = "[{\"age\":15,\"birthday\":\"2022-10-03 19:59:05\",\"username\":\"heda\"},{\"age\":13,\"birthday\":\"2022-10-03 19:59:05\",\"username\":\"zy\"}]";
+        List<Person> list = JSON.parseArray(json2, Person.class);
+        System.out.println(list);
+}
+```
+
+## layui框架
+
+使用流程，在layui官网下载 [Layui - 经典开源模块化前端 UI 组件库(官方开发文档)](http://layui.org.cn/index.html)
+
+将 layui 文件放入 webapp 文件夹中
+
+### layui框架效果
+
+在 webapp 下新建 layui.html
+
+在layui官网粘入框架代码并修改引入的 layui.js  和 layui.css 为自己的路径
+
+更改两处语句 实现点击 menu 1 加载http://cn.bing.com页面
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>layout 管理系统大布局 - Layui</title>
+  <link rel="stylesheet" href="./layui/css/layui.css">
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo layui-hide-xs layui-bg-black">layout demo</div>
+    <!-- 头部区域（可配合layui 已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+      <!-- 移动端显示 -->
+      <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+        <i class="layui-icon layui-icon-spread-left"></i>
+      </li>
+
+      <li class="layui-nav-item layui-hide-xs"><a href="">nav 1</a></li>
+      <li class="layui-nav-item layui-hide-xs"><a href="">nav 2</a></li>
+      <li class="layui-nav-item layui-hide-xs"><a href="">nav 3</a></li>
+      <li class="layui-nav-item">
+        <a href="javascript:;">nav groups</a>
+        <dl class="layui-nav-child">
+          <dd><a href="">menu 11</a></dd>
+          <dd><a href="">menu 22</a></dd>
+          <dd><a href="">menu 33</a></dd>
+        </dl>
+      </li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+        <a href="javascript:;">
+          <img src="//tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" class="layui-nav-img">
+          tester
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">Your Profile</a></dd>
+          <dd><a href="">Settings</a></dd>
+          <dd><a href="">Sign out</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+        <a href="javascript:;">
+          <i class="layui-icon layui-icon-more-vertical"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree" lay-filter="test">
+        <li class="layui-nav-item layui-nav-itemed">
+          <a class="" href="javascript:;">menu group 1</a>
+          <dl class="layui-nav-child">
+<!--            修改语句-->
+            <dd><a href="http://cn.bing.com" target="fm">menu 1</a></dd>
+<!--            修改语句-->
+            <dd><a href="javascript:;">menu 2</a></dd>
+            <dd><a href="javascript:;">menu 3</a></dd>
+            <dd><a href="">the links</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item">
+          <a href="javascript:;">menu group 2</a>
+          <dl class="layui-nav-child">
+            <dd><a href="javascript:;">list 1</a></dd>
+            <dd><a href="javascript:;">list 2</a></dd>
+            <dd><a href="">超链接</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item"><a href="javascript:;">click menu item</a></li>
+        <li class="layui-nav-item"><a href="">the links</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="layui-body">
+    <!-- 内容主体区域 -->
+    <div style="padding: 15px;">内容主体区域。记得修改 layui.css 和 js 的路径</div>
+<!--    添加语句-->
+    <iframe name="fm" src="" frameborder="0" style="width: 100%;height: 100%"></iframe>
+<!--    添加语句-->
+  </div>
+
+  <div class="layui-footer">
+    <!-- 底部固定区域 -->
+    底部固定区域
+  </div>
+</div>
+<script src="./layui/layui.js"></script>
+<script>
+  //JS
+  layui.use(['element', 'layer', 'util'], function(){
+    var element = layui.element
+            ,layer = layui.layer
+            ,util = layui.util
+            ,$ = layui.$;
+
+    //头部事件
+    util.event('lay-header-event', {
+      //左侧菜单事件
+      menuLeft: function(othis){
+        layer.msg('展开左侧菜单的操作', {icon: 0});
+      }
+      ,menuRight: function(){
+        layer.open({
+          type: 1
+          ,content: '<div style="padding: 15px;">处理右侧面板的操作</div>'
+          ,area: ['260px', '100%']
+          ,offset: 'rt' //右上角
+          ,anim: 5
+          ,shadeClose: true
+        });
+      }
+    });
+
+  });
+</script>
+</body>
+</html>
+```
+
