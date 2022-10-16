@@ -3079,3 +3079,291 @@ public void JSONToJavaBean() {
 </html>
 ```
 
+###  表格效果
+
+**前置准备**
+
+导入sql 数据
+
+```sql
+-- 删除tb_brand表
+drop table if exists tb_brand;
+-- 创建tb_brand表
+create table tb_brand (
+    -- id 主键
+                          id  int primary key auto_increment,
+    -- 品牌名称
+                          brandName   varchar(20),
+    -- 企业名称
+                          companyName varchar(20),
+    -- 排序字段
+                          ordered      int,
+    -- 描述信息
+                          description  varchar(100),
+    -- 状态：0：禁用  1：启用
+                          status       int
+);
+-- 添加数据
+insert into tb_brand (brandName, companyName, ordered, description, status)
+values
+    ('华为', '华为技术有限公司', 100, '万物互联', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('格力', '格力电器股份有限公司', 30, '让世界爱上中国造', 1),
+    ('阿里巴巴', '阿里巴巴集团控股有限公司', 10, '买买买', 1),
+    ('腾讯', '腾讯计算机系统有限公司', 50, '玩玩玩', 0),
+    ('百度', '百度在线网络技术公司', 5, '搜搜搜', 0),
+    ('京东', '北京京东世纪贸易有限公司', 40, '就是快', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('三只松鼠', '三只松鼠股份有限公司', 5, '好吃不上火', 0),
+    ('华为', '华为技术有限公司', 100, '万物互联', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('格力', '格力电器股份有限公司', 30, '让世界爱上中国造', 1),
+    ('阿里巴巴', '阿里巴巴集团控股有限公司', 10, '买买买', 1),
+    ('腾讯', '腾讯计算机系统有限公司', 50, '玩玩玩', 0),
+    ('百度', '百度在线网络技术公司', 5, '搜搜搜', 0),
+    ('京东', '北京京东世纪贸易有限公司', 40, '就是快', 1),
+    ('华为', '华为技术有限公司', 100, '万物互联', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('格力', '格力电器股份有限公司', 30, '让世界爱上中国造', 1),
+    ('阿里巴巴', '阿里巴巴集团控股有限公司', 10, '买买买', 1),
+    ('腾讯', '腾讯计算机系统有限公司', 50, '玩玩玩', 0),
+    ('百度', '百度在线网络技术公司', 5, '搜搜搜', 0),
+    ('京东', '北京京东世纪贸易有限公司', 40, '就是快', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('三只松鼠', '三只松鼠股份有限公司', 5, '好吃不上火', 0),
+    ('华为', '华为技术有限公司', 100, '万物互联', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('格力', '格力电器股份有限公司', 30, '让世界爱上中国造', 1),
+    ('阿里巴巴', '阿里巴巴集团控股有限公司', 10, '买买买', 1),
+    ('腾讯', '腾讯计算机系统有限公司', 50, '玩玩玩', 0),
+    ('百度', '百度在线网络技术公司', 5, '搜搜搜', 0),
+    ('京东', '北京京东世纪贸易有限公司', 40, '就是快', 1),
+    ('华为', '华为技术有限公司', 100, '万物互联', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('格力', '格力电器股份有限公司', 30, '让世界爱上中国造', 1),
+    ('阿里巴巴', '阿里巴巴集团控股有限公司', 10, '买买买', 1),
+    ('腾讯', '腾讯计算机系统有限公司', 50, '玩玩玩', 0),
+    ('百度', '百度在线网络技术公司', 5, '搜搜搜', 0),
+    ('京东', '北京京东世纪贸易有限公司', 40, '就是快', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('三只松鼠', '三只松鼠股份有限公司', 5, '好吃不上火', 0),
+    ('华为', '华为技术有限公司', 100, '万物互联', 1),
+    ('小米', '小米科技有限公司', 50, 'are you ok', 1),
+    ('格力', '格力电器股份有限公司', 30, '让世界爱上中国造', 1),
+    ('阿里巴巴', '阿里巴巴集团控股有限公司', 10, '买买买', 1),
+    ('腾讯', '腾讯计算机系统有限公司', 50, '玩玩玩', 0),
+    ('百度', '百度在线网络技术公司', 5, '搜搜搜', 0),
+    ('京东', '北京京东世纪贸易有限公司', 40, '就是快', 1);
+```
+
+在layui官网下载 layui包，并复制layui文件夹到项目webapp下
+
+pom文件 增加依赖
+
+```XML
+<dependency>
+   <groupId>mysql</groupId>
+   <artifactId>mysql-connector-java</artifactId>
+   <version>5.1.38</version>
+</dependency>
+<dependency>
+   <groupId>commons-beanutils</groupId>
+   <artifactId>commons-beanutils</artifactId>
+   <version>1.9.4</version></dependency>
+</dependency>
+<dependency>
+   <groupId>com.alibaba</groupId>
+   <artifactId>druid</artifactId>
+   <version>1.2.8</version>
+</dependency>
+```
+
+在 webapp 下新建文件 table.html
+
+在layui官网粘入数据表格代码并修改引入的 layui.js  和 layui.css 为自己的路径
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="./layui/css/layui.css"    media="all">
+  <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+           
+<table class="layui-hide" id="test"></table>
+              
+          
+<script src="./layui/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+ 
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+  
+  table.render({
+    elem: '#test'
+    ,url: '../demo/table/user/-page=1&limit=20.js'
+    ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+    ,cols: [[
+      {field:'id', width:80, title: 'ID', sort: true}
+      ,{field:'username', width:80, title: '用户名'}
+      ,{field:'sex', width:80, title: '性别', sort: true}
+      ,{field:'city', width:80, title: '城市'}
+      ,{field:'sign', title: '签名', width: '30%', minWidth: 100} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+      ,{field:'experience', title: '积分', sort: true}
+      ,{field:'score', title: '评分', sort: true}
+      ,{field:'classify', title: '职业'}
+      ,{field:'wealth', width:137, title: '财富', sort: true}
+    ]]
+  });
+});
+</script>
+
+</body>
+</html>
+```
+
+**实现**
+
+> 编写后端查询代码
+
+在 pojo 下新建文件 Brand.java
+
+````java
+@Data
+@ToString
+public class Brand {
+    private int id;
+    private String brandName;
+    private String companyName;
+    private int ordered;
+    private String description;
+    private int status;
+}
+````
+
+在 dao 下新建文件 BrandDao.java
+
+```java
+public interface BrandDao {
+    List<Brand> queryDate() throws SQLException;
+}
+```
+
+在 dao 下新建文件 BrandImpl.java
+
+```java
+public class BrandImpl implements BrandDao {
+    @Override
+    public List<Brand> queryDate() throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select * from tb_brand;";
+        List<Brand> query = qr.query(sql, new BeanListHandler<>(Brand.class));
+        return query;
+    }
+}
+```
+
+> 拉取数据转化成JSON格式
+
+在 pojo下新建文件 ResultBrean.java
+
+```java
+@Data
+@ToString
+@NoArgsConstructor
+public class ResultBrean<T> {
+    //编写成JSON模板格式
+    private int code;
+    private String msg;
+    private int count;
+    private List<Brand> data;
+}
+```
+
+在 controller下新建文件 JsonBrand.java
+
+```java
+@WebServlet("/static")
+public class JsonBrand extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        List<Brand> brands =null;
+        try {
+            brands = new BrandImpl().queryDate();
+            System.out.println(brands);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        ResultBrean<Object> rb = new ResultBrean<>();
+        rb.setCode(0);
+        rb.setMsg("");
+        rb.setCount(50);
+        rb.setData(brands);
+
+        String str = JSON.toJSONString(rb);
+
+        System.out.println(str);
+        resp.setContentType("test/html;charset = utf-8");
+
+        resp.getWriter().println(str);
+    }
+}
+```
+
+> 收到数据前端获取
+
+更改 table.html
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="./layui/css/layui.css" tppabs="http://res.layui.com/layui/dist/css/layui.css"  media="all">
+  <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+
+<table class="layui-hide" id="test"></table>
+
+
+<script src="./layui/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+
+<script>
+  layui.use('table', function(){
+    var table = layui.table;
+
+    table.render({
+      elem: '#test'
+      ,url: '../demo1/static'
+      ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+      ,cols: [[
+        {field:'id', width:80, title: 'ID', sort: true}
+        ,{field:'brandName', width:80, title: '品牌名'}
+        ,{field:'companyName', width:200, title: '公司名', sort: true}
+        ,{field:'ordered', width:80, title: '排序'}
+        ,{field:'description', title: '描述信息', width: '30%', minWidth: 100} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+        ,{field:'status', title: '状态', sort: true}
+      ]]
+    });
+  });
+</script>
+
+</body>
+</html>
+```
+
