@@ -3367,3 +3367,113 @@ public class JsonBrand extends HttpServlet {
 </html>
 ```
 
+### 分页
+
+在表格效果中更改
+
+table.html
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="./layui/css/layui.css" tppabs="http://res.layui.com/layui/dist/css/layui.css"  media="all">
+  <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+
+<table class="layui-hide" id="test"></table>
+
+
+<script src="./layui/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+
+<script>
+  layui.use('table', function(){
+    var table = layui.table;
+
+    table.render({
+      elem: '#test'
+      ,url: '../demo1/static'
+      ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+      ,cols: [[
+        {field:'id', width:80, title: 'ID', sort: true}
+        ,{field:'brandName', width:80, title: '品牌名'}
+        ,{field:'companyName', width:200, title: '公司名', sort: true}
+        ,{field:'ordered', width:80, title: '排序'}
+        ,{field:'description', title: '描述信息', width: '30%', minWidth: 100} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+        ,{field:'status', title: '状态', sort: true}
+      ]]
+      ,page: true//开启分页
+    });
+  });
+</script>
+
+</body>
+</html>
+```
+
+JsonBrand.java
+
+```java
+@WebServlet("/static")
+public class JsonBrand extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //接受前端传过来得分页参数
+        Integer page = Integer.valueOf(req.getParameter("page"));
+        Integer limit = Integer.valueOf(req.getParameter("limit"));
+
+        List<Brand> brands =null;
+        try {
+            //计算分页 开始索引 = （当前页码 -  1）*  每页显示条数
+            brands = new BrandImpl().queryDate((page-1)*10,limit);
+            System.out.println(brands);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        ResultBrean rb = new ResultBrean();
+        rb.setCode(0);
+        rb.setMsg("");
+        rb.setCount(50);
+        rb.setData(brands);
+
+        String str = JSON.toJSONString(rb);
+
+        System.out.println(str);
+        resp.setContentType("test/html;charset = utf-8");
+
+        resp.getWriter().println(str);
+    }
+}
+```
+
+BrandDao.java
+
+```java
+public interface BrandDao {
+    List<Brand> queryDate(Integer page, Integer limit) throws SQLException;
+}
+```
+
+BrandImpl.java
+
+```java
+public class BrandImpl implements BrandDao {
+    @Override
+    public List<Brand> queryDate(Integer page,Integer limit) throws SQLException {
+        QueryRunner qr = new QueryRunner(DruidUtils.getDataSource());
+        String sql = "select * from tb_brand limit ?,?;";
+        List<Brand> query = qr.query(sql, new BeanListHandler<>(Brand.class),page,limit);
+        return query;
+    }
+}
+```
+
