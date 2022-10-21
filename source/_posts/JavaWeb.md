@@ -3277,7 +3277,8 @@ public class BrandImpl implements BrandDao {
 ```java
 @Data
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor//空参构造
+@AllArgsConstructor//全参构造
 public class ResultBrean<T> {
     //编写成JSON模板格式
     private int code;
