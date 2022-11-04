@@ -655,7 +655,7 @@ public static void main(String[] args) throws SQLException {
     }
 ```
 
-![Prepared](https://s1.328888.xyz/2022/09/26/ViHfP.png)
+![Prepared](https://image.aobayu.cn/images/Prepared.png)
 
 **Statement 与 PreparedStatement的区别**
 

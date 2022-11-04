@@ -82,11 +82,11 @@ katex:
 # --------------------------------------
 
 # Favicon（網站圖標）
-favicon: http://aobayu.cn/images/head.jpg
+favicon: https://image.aobayu.cn/images/head.jpg
 
 # Avatar (頭像)
 avatar:
-  img: http://aobayu.cn/images/head.jpg
+  img: https://image.aobayu.cn/images/head.jpg
   effect: false
 
 # Disable all banner image
@@ -126,7 +126,7 @@ cover:
   # left/right/both
   position: both
   # When cover is not set, the default cover is displayed (當沒有設置cover時，默認的封面顯示)
-  default_cover: https://s1.328888.xyz/2022/08/05/jRvAp.jpg
+  default_cover:  https://image.aobayu.cn/images/diagram.jpg
     # - https://s1.328888.xyz/2022/08/05/jZlHS.jpg
     # - https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg
 
@@ -414,7 +414,7 @@ footer:
   owner:
     enable: true
     since: 2020
-  custom_text: 框架 <a href="https://hexo.io/zh-cn/index.html">Hexo</a>|主题 <a href="https://butterfly.js.org/">Butterfly</a><br><a href="https://beian.miit.gov.cn/">豫ICP备2022025439号-1</a><br><a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral">本网站由<img src="http://aobayu.cn/images/logo5.png" alt="又拍云" style="height:30px;position:relative;top:9px;">提供CDN加速/云存储服务</a>
+  custom_text: 框架 <a href="https://hexo.io/zh-cn/index.html">Hexo</a>|主题 <a href="https://butterfly.js.org/">Butterfly</a><br><a href="https://beian.miit.gov.cn/">豫ICP备2022025439号-1</a><br><a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral">本网站由<img src="https://image.aobayu.cn/images/logo5.png" alt="又拍云" style="height:30px;position:relative;top:9px;">提供CDN加速/云存储服务</a>
   copyright: false # Copyright of theme and framework
 
 # Analysis
@@ -503,7 +503,7 @@ tag_ui: # 留空或 index
 # Website Background (設置網站背景)
 # can set it to color or image (可設置圖片 或者 顔色)
 # The formal of image: url(http://xxxxxx.com/xxx.jpg)
-background: url(http://aobayu.cn/images/background.jpg)
+background: url(https://image.aobayu.cn/images/background.jpg)
 # Footer Background
 footer_bg: 
 

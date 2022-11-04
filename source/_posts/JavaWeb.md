@@ -87,7 +87,7 @@ web应用程序编写完毕后，若想提供给外界访问：需要一个服�
 
 - *.htm, *.html,这些都是网页的后缀，如果服务器上一直存在这些东西，我们就可以直接进行读取。通络；
 
-![](https://s1.328888.xyz/2022/09/29/MLZRm.png)
+![](https://image.aobayu.cn/images/web1.png)
 
 - 静态web存在的缺点
   - Web页面无法动态更新，所有用户看到都是同一个页面
@@ -100,7 +100,7 @@ web应用程序编写完毕后，若想提供给外界访问：需要一个服�
 
 页面会动态展示： “Web的页面展示的效果因人而异”；
 
-![](https://s1.328888.xyz/2022/09/29/MLR8K.png)
+![](https://image.aobayu.cn/images/web2.png)
 
 缺点：
 
@@ -115,7 +115,7 @@ web应用程序编写完毕后，若想提供给外界访问：需要一个服�
 - Web页面可以动态更新，所有用户看到都不是同一个页面
 - 它可以与数据库交互 （数据持久化：注册，商品信息，用户信息........）
 
-![](https://s1.328888.xyz/2022/09/29/MLAwr.png)
+![](https://image.aobayu.cn/images/web3.png)
 
 ## web服务器
 
@@ -331,27 +331,27 @@ java.util.logging.ConsoleHandler.encoding = GBK
 
 1.添加新配置
 
-![](https://s1.328888.xyz/2022/10/08/fRqTk.png)
+![](https://image.aobayu.cn/images/tomcat1.png)
 
 2. 添加Tomact Server
 
-![](https://s1.328888.xyz/2022/10/08/fRXsE.png)
+![](https://image.aobayu.cn/images/tomcat2.png)
 
 3. 选择 tomcat 路径
 
-![](https://s1.328888.xyz/2022/10/08/fRYpJ.png)
+![](https://image.aobayu.cn/images/tomcat3.png)
 
 4. 添加 Artifact
 
-![](https://s1.328888.xyz/2022/10/08/fRAOw.png)
+![](https://image.aobayu.cn/images/tomcat4.png)
 
 5. 添加 :war exploded
 
-![](https://s1.328888.xyz/2022/10/08/fRR9i.png)
+![](https://image.aobayu.cn/images/tomcat5.png)
 
 6. 启动
 
-![](https://s1.328888.xyz/2022/10/08/fRHR7.png)
+![](https://image.aobayu.cn/images/tomcat6.png)
 
 ## maven
 
@@ -447,23 +447,23 @@ maven仓库默认是在 C盘 .m2 目录下,如果怕C盘满，可以在设置中
 
 1. 打开IDEA，新建项目
 
-![](https://s1.328888.xyz/2022/10/08/fRb5g.png)
+![](https://image.aobayu.cn/images/Maven1.png)
 
 2. 选择Jakarta EE ，Web appLication，下一步
 
-![](https://s1.328888.xyz/2022/10/08/fRBDi.png)
+![](https://image.aobayu.cn/images/Maven2.png)
 
 3. 选择Java EE 8，勾选 Web Profile，创建项目
 
-![](https://s1.328888.xyz/2022/10/08/fRwzh.png)
+![](https://image.aobayu.cn/images/Maven3.png)
 
 4. 项目创建完成，目录如下
 
-![](https://s1.328888.xyz/2022/10/08/fRPwd.png)
+![](https://image.aobayu.cn/images/Maven4.png)
 
 5. IDEA中的Maven设置，仓库位置，更改路径
 
-![](https://s1.328888.xyz/2022/10/08/fR77j.png)
+![](https://image.aobayu.cn/images/Maven5.png)
 
 **pom核心配置文件**
 

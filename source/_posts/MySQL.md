@@ -97,7 +97,7 @@ MySQL就是一个 数据库管理系统软件, 安装了Mysql的电脑,我们叫
 
 **数据模型：**
 
-![数据模型](https://s1.328888.xyz/2022/09/20/2MYzP.png)
+![数据模型](https://image.aobayu.cn/images/mysql.png)
 
 创建一个数据库，会在本地文件夹生成.frm 表文件 和 .MYD 数据文件，在安装目录下的 data文件下
 
@@ -1239,7 +1239,7 @@ SELECT 字段名 FROM 左表 RIGHT [OUTER ]JOIN 右表 ON 条件
 SELECT * FROM products p RIGHT JOIN category c ON p.`category_id` = c.`cid`;
   ```
 
-![SQL JOINS](https://s1.328888.xyz/2022/09/23/IPbkR.png)
+![SQL JOINS](https://image.aobayu.cn/images/join.png)
 
 ### 子查询
 
@@ -1416,8 +1416,6 @@ ROLLBACK
 
 - 执行失败的情况: 开启事务 -> 执行多条 SQL 语句 -> 事务的回滚
 
-
-
 模拟张三给李四转 500 元钱
 
 ```sql
@@ -1481,7 +1479,7 @@ MySQL是一个客户端／服务器架构的软件，对于同一个服务器来
 
  如果一个事务读到了另一个未提交事务修改过的数据，那就意味着发生了**脏读**
 
-![Dirty Read](https://s1.328888.xyz/2022/09/23/IxOqi.png)
+![Dirty Read](https://image.aobayu.cn/images/Dirty Read.png)
 
 如上图，Session A和Session B各开启了一个事务，Session B中的事务先将number列为1的记录的name列更新为'关羽'，然后Session A中的事务再去查询这条number为1的记录，如果读到列name的值为'关羽'，而Session B中的事务稍后进行了回滚，那么Session A中的事务相当于读到了一个不存在的数据，这种现象就称之为脏读。
 
@@ -1489,7 +1487,7 @@ MySQL是一个客户端／服务器架构的软件，对于同一个服务器来
 
 如果一个事务只能读到另一个已经提交的事务**修改**过的数据，并且其他事务每对该数据进行一次修改并提交后，该事务都能查询得到最新值，那就意味着发生了**不可重复读**
 
-![Non-Repeatable Read](https://s1.328888.xyz/2022/09/23/Ix3xp.png)
+![Non-Repeatable Read](https://image.aobayu.cn/images/Non-Repeatable Read.png)
 
 如上图，我们在Session B中提交了几个隐式事务（注意是隐式事务，意味着语句结束事务就提交了），这些事务都修改了number列为1的记录的列name的值，每次事务提交之后，如果Session A中的事务都可以查看到最新的值，这种现象也被称之为不可重复读。
 
@@ -1497,7 +1495,7 @@ MySQL是一个客户端／服务器架构的软件，对于同一个服务器来
 
 如果一个事务先根据某些条件查询出一些记录，之后另一个事务又向表中**插入**了符合这些条件的记录，原先的事务再次按照该条件查询时，能把另一个事务插入的记录也读出来，那就意味着发生了幻读
 
-![Phantom](https://s1.328888.xyz/2022/09/23/Ix4Qn.png)
+![Phantom](https://image.aobayu.cn/images/Phantom.png)
 
 如上图，Session A中的事务先根据条件number > 0这个条件查询表hero，得到了name列值为'刘备'的记录；之后Session B中提交了一个隐式事务，该事务向表hero中插入了一条新记录；之后Session A中的事务再根据相同的条件number > 0查询表hero，得到的结果集中包含Session B中的事务新插入的那条记录，这种现象也被称之为幻读。
 
@@ -1590,8 +1588,6 @@ set global default_storage_engine=innodb;
 ```
 
 ### InnoDB
-
- 
 
 InnoDB是一个健壮的事务型存储引擎，这种存储引擎已经被很多互联网公司使用，为用户操作非常大的数据存储提供了一个强大的解决方案。
 
