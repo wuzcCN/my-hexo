@@ -33,10 +33,11 @@
   background-color: #49b1f5;
 }
 
-.postImgHover img, #pagination .prev-post img, #pagination .next-post img, .relatedPosts > .relatedPosts-list > div img{
-background-image: url(https://image.aobayu.cn/images/diagram.jpg);
-background-size: 100% 100%;
-opacity: 0.7!important;
+.postImgHover img, #pagination .prev-post img, #pagination .next-post img, 
+.relatedPosts > .relatedPosts-list > div img{
+	background-image: url(https://image.aobayu.cn/images/generics.png);
+	background-size: 100%;
+	opacity: 0.7!important;
 }
 /* 文章页背景 */
 .layout_post>#post {
