@@ -17,7 +17,7 @@ description: MySQL是一个关系型数据库管理系统，由瑞典MySQL AB �
 
 - 其本质是一个文件系统, 还是以文件的方式,将数据保存在电脑上
 
-| 存储方 | 优点                                                         | 优点                                           |
+| 存储方 | 优点                                                         | 缺点                                           |
 | ------ | ------------------------------------------------------------ | ---------------------------------------------- |
 | 内存   | 速度快                                                       | 不能够永久保存,数据是临时状态的                |
 | 文件   | 数据是可以永久保存的                                         | 使用IO流操作文件,不方便                        |
@@ -31,7 +31,7 @@ MySQL就是一个 数据库管理系统软件, 安装了Mysql的电脑,我们叫
 
 用于建立、使用和维护数据库，对数据库进行统一的管理
 
-**SQL:**英文：Structured Query Language，简称 SQL，结构化查询语言
+**SQL**英文：Structured Query Language，简称 SQL，结构化查询语言
 
 是一种特殊目的的编程语言，是一种数据库 查询和程序设计语言，用于存取数据以及查询、更新和管理关系数据库系统。
 
@@ -1479,7 +1479,7 @@ MySQL是一个客户端／服务器架构的软件，对于同一个服务器来
 
  如果一个事务读到了另一个未提交事务修改过的数据，那就意味着发生了**脏读**
 
-![Dirty Read](https://image.aobayu.cn/images/Dirty Read.png)
+![Dirty Read](https://image.aobayu.cn/images/DirtyRead.png)
 
 如上图，Session A和Session B各开启了一个事务，Session B中的事务先将number列为1的记录的name列更新为'关羽'，然后Session A中的事务再去查询这条number为1的记录，如果读到列name的值为'关羽'，而Session B中的事务稍后进行了回滚，那么Session A中的事务相当于读到了一个不存在的数据，这种现象就称之为脏读。
 
@@ -1487,7 +1487,7 @@ MySQL是一个客户端／服务器架构的软件，对于同一个服务器来
 
 如果一个事务只能读到另一个已经提交的事务**修改**过的数据，并且其他事务每对该数据进行一次修改并提交后，该事务都能查询得到最新值，那就意味着发生了**不可重复读**
 
-![Non-Repeatable Read](https://image.aobayu.cn/images/Non-Repeatable Read.png)
+![Non-Repeatable Read](https://image.aobayu.cn/images/Non-Repeatable-Read.png))
 
 如上图，我们在Session B中提交了几个隐式事务（注意是隐式事务，意味着语句结束事务就提交了），这些事务都修改了number列为1的记录的列name的值，每次事务提交之后，如果Session A中的事务都可以查看到最新的值，这种现象也被称之为不可重复读。
 

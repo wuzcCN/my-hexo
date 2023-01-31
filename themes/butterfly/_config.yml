@@ -21,7 +21,7 @@ menu:
 # Code Blocks (代碼相關)
 # --------------------------------------
 
-highlight_theme: mac light #  darker / pale night / light / ocean / mac / mac light / false
+highlight_theme: light #  darker / pale night / light / ocean / mac / mac light / false
 highlight_copy: true # copy button
 highlight_lang: true # show the code language
 highlight_shrink: false # true: shrink the code blocks / false: expand the code blocks | none: expand code blocks and hide the button
@@ -81,18 +81,18 @@ katex:
 # --------------------------------------
 
 # Favicon（網站圖標）
-favicon: https://s1.328888.xyz/2022/08/05/jRwds.webp
+favicon: https://image.aobayu.cn/images/head.jpg
 
 # Avatar (頭像)
 avatar:
-  img: https://s1.328888.xyz/2022/08/05/jRwds.webp
+  img: https://image.aobayu.cn/images/head.jpg
   effect: false
 
 # Disable all banner image
-disable_top_img: true
+disable_top_img: false
 
 # The banner image of home page
-index_img: https://s1.328888.xyz/2022/08/05/jA9Nr.webp
+index_img: 
 
 # If the banner of page not setting, it will show the top_img
 default_top_img: 
@@ -125,7 +125,7 @@ cover:
   # left/right/both
   position: both
   # When cover is not set, the default cover is displayed (當沒有設置cover時，默認的封面顯示)
-  default_cover:
+  default_cover: https://image.aobayu.cn/images/generics.png
     # - https://s1.328888.xyz/2022/08/05/jZlHS.jpg
     # - https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg
 
@@ -413,7 +413,7 @@ footer:
   owner:
     enable: true
     since: 2020
-  custom_text: 框架 <a href="https://hexo.io/zh-cn/index.html">Hexo</a>|主题 <a href="https://butterfly.js.org/">Butterfly</a><br><a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral">本网站由<img src="https://s1.328888.xyz/2022/08/05/uueUE.png" alt="又拍云" style="height:30px;position:relative;top:9px;">提供CDN加速/云存储服务</a>
+  custom_text: 框架<a href="https://hexo.io/zh-cn/index.html">Hexo</a>|主题<a href="https://butterfly.js.org/">Butterfly</a><br><a href="https://beian.miit.gov.cn/">豫ICP备2022025439号-1</a><br><a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral">本网站由<img src="https://image.aobayu.cn/images/logo5.png" alt="又拍云" style="height:30px;position:relative;top:9px;">提供CDN加速/云存储服务</a>
   copyright: false # Copyright of theme and framework
 
 # Analysis
@@ -502,9 +502,9 @@ tag_ui: # 留空或 index
 # Website Background (設置網站背景)
 # can set it to color or image (可設置圖片 或者 顔色)
 # The formal of image: url(http://xxxxxx.com/xxx.jpg)
-background: url(https://s1.328888.xyz/2022/09/09/99W9n.jpg)
+background: url(https://image.aobayu.cn/images/background.jpg)
 # Footer Background
-footer_bg: "rgba(245, 245, 245, 0.4)"
+footer_bg: 
 
 # the position of bottom right button/default unit: px (右下角按鈕距離底部的距離/默認單位為px)
 rightside-bottom:
@@ -617,7 +617,7 @@ subtitle:
   source: false
   # 如果關閉打字效果，subtitle 只會顯示 sub 的第一行文字
   sub: 
-    - 我所创造的怪物 是我的罪与恶 是我的爱与保护
+    - 爱得越深刻 死的意义就越沉重 失落感也会越深刻
 
 # Loading Animation (加載動畫)
 preloader: true
@@ -704,13 +704,13 @@ translate:
   # The text of a button
   default: 繁
   # the language of website (1 - Traditional Chinese/ 2 - Simplified Chinese）
-  defaultEncoding: 1
+  defaultEncoding: 2
   # Time delay
-  translateDelay: 0
+  translateDelay: 200
   # The text of the button when the language is Simplified Chinese
   msgToTraditionalChinese: '繁'
   # The text of the button when the language is Traditional Chinese
-  msgToSimplifiedChinese: '簡'
+  msgToSimplifiedChinese: '简'
 
 # Read Mode (閲讀模式)
 readmode: true

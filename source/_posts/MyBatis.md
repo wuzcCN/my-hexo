@@ -1630,6 +1630,17 @@ pom.xml
             <artifactId>logback-core</artifactId>
             <version>1.2.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.logback-extensions</groupId>
+            <artifactId>logback-ext-spring</artifactId>
+            <version>0.1.4</version>
+        </dependency>
 ```
 
 resource 下新建 logback.xml
@@ -1652,6 +1663,21 @@ resource 下新建 logback.xml
         <appender-ref ref="Console"/>
     </root>
 </configuration>
+```
+
+web.xml
+
+```xml
+	<!-- logback -->
+    <context-param>
+        <param-name>logbackConfigLocation</param-name>
+        <!--logback.xml放在resources路径下-->
+        <param-value>classpath:logback.xml</param-value>
+    </context-param>
+	<!-- logback自带监听器加载配置文件-->
+	<listener>
+    <listener-class>ch.qos.logback.ext.spring.web.LogbackConfigListener</listener-class>
+ 	</listener>
 ```
 
 ## MyBatis嵌套查询
